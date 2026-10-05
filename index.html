@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>神奈川県1部 2026 データボード｜鎌倉インターナショナルFC 3位への道</title>
+<meta name="description" content="2026 神奈川県社会人サッカーリーグ1部の順位・勝ち点推移・星取表・残り日程難易度・3位入りシミュレーター。">
+<style>
+  :root{color-scheme:light;
+    --page:#f9f9f7;--surface:#fcfcfb;--surface2:#f4f3ef;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;
+    --grid:#e1e0d9;--axis:#c3c2b7;--border:rgba(11,11,11,.10);--hi:#2a78d6;--good:#0ca30c;--goodink:#006300;--bad:#d03b3b;
+    --bar:#b9b7ad;--bardraw:#dedcd2;--shadow:0 1px 2px rgba(11,11,11,.05)}
+  :root[data-theme="dark"]{color-scheme:dark;
+    --page:#0d0d0d;--surface:#1a1a19;--surface2:#232321;--ink:#fff;--ink2:#c3c2b7;--muted:#898781;
+    --grid:#2c2c2a;--axis:#383835;--border:rgba(255,255,255,.10);--hi:#3987e5;--good:#0ca30c;--goodink:#0ca30c;--bad:#e66767;
+    --bar:#56554f;--bardraw:#3d3d38;--shadow:none}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);padding:24px 16px 64px;
+    font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;font-size:15px;line-height:1.6}
+  .wrap{max-width:980px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+  h1{font-size:21px;margin:0 0 4px;letter-spacing:-.015em}
+  .sub{font-size:12.5px;color:var(--muted);margin:0}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink2);border-radius:999px;
+    padding:6px 13px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+  h2{font-size:14px;margin:0 0 3px}
+  .lead{font-size:12px;color:var(--muted);margin:0 0 12px}
+  .hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+  .ht{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:13px 15px;box-shadow:var(--shadow)}
+  .ht .l{font-size:11.5px;color:var(--muted)}
+  .ht .v{font-size:27px;font-weight:680;letter-spacing:-.025em;line-height:1.1}
+  .ht .v small{font-size:13px;font-weight:500;color:var(--ink2)}
+  .ht .n{font-size:11.5px;color:var(--ink2);margin-top:2px}
+  .ht.acc{border-color:color-mix(in srgb,var(--hi) 42%,transparent)} .ht.acc .v{color:var(--hi)}
+  .links{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:11px}
+  a.nav{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:14px 15px;box-shadow:var(--shadow);transition:border-color .15s,transform .15s}
+  a.nav:hover{border-color:var(--hi);transform:translateY(-1px)}
+  a.nav .t{font-size:14.5px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:7px}
+  a.nav .t span{color:var(--hi)}
+  a.nav .d{font-size:12px;color:var(--ink2);line-height:1.5}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+  th,td{padding:5px 7px;border-bottom:1px solid var(--grid);text-align:right;white-space:nowrap}
+  th:nth-child(2),td:nth-child(2){text-align:left;white-space:normal}
+  th{font-size:10.5px;color:var(--muted);font-weight:600}
+  tr.km td{color:var(--hi);font-weight:650}
+  .bw{width:34%}
+  .mini{position:relative;height:13px}
+  .sg{position:absolute;top:0;height:13px;border-radius:2px;background:var(--bar)}
+  .sg.d{background:var(--bardraw);border:1px solid var(--axis)}
+  tr.km .sg{background:var(--hi)}
+  tr.km .sg.d{background:color-mix(in srgb,var(--hi) 30%,var(--surface));border-color:var(--hi)}
+  .pot{position:absolute;top:0;height:13px;border-radius:2px;border:1px dashed var(--axis);opacity:.6}
+  footer{font-size:11.5px;color:var(--muted);line-height:1.7;margin-top:16px}
+  a{color:var(--hi)}
+</style>
+</head>
+<body><div class="wrap">
+<header>
+  <div>
+    <h1>神奈川県社会人サッカーリーグ1部 2026 ─ データボード</h1>
+    <p class="sub">鎌倉インターナショナルFCの3位入りを軸に、勝ち点推移・星取表・残り日程・到達可能性をまとめています ／ <b>第15節終了時点（2026年10月4日）</b></p>
+  </div>
+  <button class="btn" id="theme">ダーク</button>
+</header>
+
+<div class="hero">
+  <div class="ht acc"><div class="l">鎌倉インターナショナルFC</div><div class="v">4<small>位・23pt</small></div><div class="n">6勝5分4敗 ／ 得失点 +6</div></div>
+  <div class="ht"><div class="l">3位 FIFTY CLUB との差</div><div class="v">5<small>pt</small></div><div class="n">残り3試合・最大32pt</div></div>
+  <div class="ht"><div class="l">3位以内が残るパターン</div><div class="v">8<small>/27</small></div><div class="n">残り3試合の勝敗の組み合わせ</div></div>
+  <div class="ht"><div class="l">3位に必要な最終勝点</div><div class="v">28<small>pt〜</small></div><div class="n">最低でも残り3試合で +5 が必要</div></div>
+</div>
+
+<div class="card">
+  <h2>いまの順位</h2>
+  <p class="lead">1マス＝3pt＝1勝。薄いマスは引き分け（1pt）、点線は残り3試合で伸びうる分。</p>
+  <table>
+    <thead><tr><th>順</th><th>クラブ</th><th>試</th><th>Pt</th><th class="bw">勝ち点の積み上げ ─ 最大</th><th>得失</th><th>最大</th></tr></thead>
+    <tbody id="tb"></tbody>
+  </table>
+</div>
+
+<div class="links">
+  <a class="nav" href="trend.html">
+    <div class="t"><span>↗</span>勝ち点の推移と星取表</div>
+    <div class="d">第1節からの勝ち点を折れ線で。クラブのオン・オフ切り替え、順位推移・首位との差モード、全90試合の星取表つき。</div></a>
+  <a class="nav" href="simulator.html">
+    <div class="t"><span>↗</span>3位入りシミュレーター</div>
+    <div class="d">残り15試合の結果を入れると、3位に届くパターンが消えていくツール。到達可能性は総当たりの厳密計算。</div></a>
+  <a class="nav" href="fixtures.html">
+    <div class="t"><span>↗</span>残り日程の難易度マップ</div>
+    <div class="d">3〜7位の最終3節を、相手の強さ・ホーム/アウェイ・前回対戦の結果から1試合ずつ評価。</div></a>
+</div>
+
+<footer>
+  ・データ出典：<a href="https://fakj-shakaijin.com/standings/leaguediv1/">一般社団法人神奈川県サッカー協会 社会人部会</a>（順位表 / 日程・結果）。非公式のファンメイドページです。<br>
+  ・順位決定方法：勝点 → 得失点差 → 総得点 → 直接対決。
+</footer>
+</div>
+<script>
+const T=[
+ ["東急SレイエスFC",15,11,3,1,30,10,36],
+ ["神奈川大学SC",15,9,2,4,29,19,29],
+ ["FIFTY CLUB",15,8,4,3,26,11,28],
+ ["鎌倉インターナショナルFC",15,6,5,4,21,15,23],
+ ["エブリサ藤沢ユナイテッド",15,6,4,5,18,16,22],
+ ["品川CC横浜",15,6,4,5,13,11,22],
+ ["神奈川県教員SC",15,6,3,6,19,18,21],
+ ["横浜猛蹴FC",15,3,6,6,17,19,15],
+ ["品川CCセカンド",15,2,2,11,9,32,8],
+ ["FCSC",15,0,3,12,7,38,3]];
+const DOM=36+9;
+document.getElementById('tb').innerHTML=T.map((r,i)=>{
+  const [n,pl,w,d,l,gf,ga,pt]=r, gd=gf-ga, mx=pt+(18-pl)*3, km=n.startsWith('鎌倉');
+  const pc=v=>v/DOM*100; let cur=0,s='';
+  for(let k=0;k<w;k++){s+=`<div class="sg" style="left:calc(${pc(cur)}% + 1px);width:calc(${pc(3)}% - 2px)"></div>`;cur+=3;}
+  for(let k=0;k<d;k++){s+=`<div class="sg d" style="left:calc(${pc(cur)}% + 1px);width:calc(${pc(1)}% - 2px)"></div>`;cur+=1;}
+  s+=`<div class="pot" style="left:calc(${pc(cur)}% + 1px);width:calc(${pc(mx-pt)}% - 2px)"></div>`;
+  return `<tr class="${km?'km':''}"><td>${i+1}</td><td>${n}</td><td>${pl}</td><td><b>${pt}</b></td>
+    <td class="bw"><div class="mini">${s}</div></td><td>${gd>0?'+':''}${gd}</td><td>${mx}</td></tr>`;
+}).join('');
+document.getElementById('theme').onclick=e=>{const d=document.documentElement.dataset.theme==='dark';
+  document.documentElement.dataset.theme=d?'light':'dark';e.target.textContent=d?'ダーク':'ライト';};
+</script>
+</body></html>

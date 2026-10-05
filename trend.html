@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>勝ち点推移＋星取表 第1〜15節｜神奈川県1部 2026</title>
+<style>
+  :root{
+    color-scheme:light;
+    --page:#f9f9f7;--surface:#fcfcfb;--surface2:#f4f3ef;
+    --ink:#0b0b0b;--ink2:#52514e;--muted:#898781;
+    --grid:#e1e0d9;--grid2:#efeee8;--axis:#c3c2b7;--border:rgba(11,11,11,.10);
+    --hi:#2a78d6;--shadow:0 1px 2px rgba(11,11,11,.05);
+    --chip:#f0efec;--wink:#006300;--link:#b32f2f;
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --page:#0d0d0d;--surface:#1a1a19;--surface2:#232321;
+    --ink:#fff;--ink2:#c3c2b7;--muted:#898781;
+    --grid:#2c2c2a;--grid2:#222220;--axis:#383835;--border:rgba(255,255,255,.10);
+    --hi:#3987e5;--shadow:none;--chip:#262624;--wink:#0ca30c;--link:#e66767;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);padding:22px 16px 60px;
+    font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;font-size:15px;line-height:1.55}
+  .wrap{max-width:1120px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  h1{font-size:19px;margin:0 0 3px;letter-spacing:-.01em}
+  .sub{font-size:12.5px;color:var(--muted);margin:0}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink2);border-radius:999px;
+    padding:6px 13px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .btn:hover{border-color:var(--axis);color:var(--ink)}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 16px 12px;box-shadow:var(--shadow)}
+  .tools{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .tools .sp{margin-left:auto;font-size:11.5px;color:var(--muted)}
+  .modes{display:flex;gap:2px;background:var(--chip);border-radius:8px;padding:2px}
+  .modes button{border:none;background:transparent;color:var(--ink2);font-size:12px;padding:5px 11px;border-radius:6px;cursor:pointer;font-family:inherit}
+  .modes button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:650;box-shadow:var(--shadow)}
+
+  #chart{position:relative;width:100%}
+  svg{display:block;width:100%;overflow:visible}
+  .lbl{font-size:11px;fill:var(--muted);font-variant-numeric:tabular-nums}
+  .endlbl{font-size:11.5px;font-weight:650;dominant-baseline:middle}
+  .endval{font-size:10.5px;font-weight:600;dominant-baseline:middle;font-variant-numeric:tabular-nums}
+  .hit{fill:transparent;cursor:crosshair}
+
+  .legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid var(--grid)}
+  .lg{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface2);
+    border-radius:999px;padding:4px 11px 4px 8px;cursor:pointer;font-size:12px;user-select:none;transition:opacity .15s}
+  .lg:hover{border-color:var(--axis)}
+  .lg .sw{width:16px;height:3px;border-radius:2px;flex:none}
+  .lg .v{font-variant-numeric:tabular-nums;color:var(--muted);font-size:11px}
+  .lg.off{opacity:.38}
+  .lg.off .sw{background:var(--axis)!important}
+  .lg.km{font-weight:700}
+
+  .tip{position:absolute;pointer-events:none;opacity:0;transition:opacity .1s;z-index:9;
+    background:var(--surface);border:1px solid var(--axis);border-radius:10px;padding:9px 11px;
+    box-shadow:0 6px 20px rgba(0,0,0,.14);font-size:11.5px;min-width:190px}
+  :root[data-theme="dark"] .tip{box-shadow:0 6px 20px rgba(0,0,0,.5)}
+  .tip h4{margin:0 0 6px;font-size:12px;display:flex;justify-content:space-between;color:var(--ink2)}
+  .tip .r{display:grid;grid-template-columns:10px 1fr auto auto;gap:7px;align-items:center;padding:1.5px 0}
+  .tip .r i{width:10px;height:3px;border-radius:2px}
+  .tip .r .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+  .tip .r .p{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+  .tip .r .m{font-size:10px;color:var(--muted);white-space:nowrap}
+  .tip .r.me .n,.tip .r.me .p{color:var(--hi)}
+
+  /* 星取表 */
+  .mx{overflow-x:auto;padding-bottom:4px}
+  .mxgrid{display:grid;min-width:920px;gap:3px;
+    grid-template-columns:120px repeat(10,minmax(56px,1fr)) 42px 70px 46px}
+  .mh{font-size:9.5px;color:var(--muted);text-align:center;line-height:1.15;padding:0 0 3px;align-self:end}
+  .mh.l{text-align:left}
+  .mrn{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:650;cursor:pointer;
+    padding:3px 6px;border-radius:7px;border:1px solid transparent;white-space:nowrap;overflow:hidden}
+  .mrn:hover{border-color:var(--axis);background:var(--surface2)}
+  .mrn .rk{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:13px}
+  .mrn .sw{width:9px;height:9px;border-radius:50%;flex:none}
+  .mrn.off{opacity:.4}
+  .mrn.off .sw{background:var(--axis)!important}
+  .mc{display:flex;flex-direction:column;gap:2px}
+  .chip{display:flex;align-items:center;justify-content:center;gap:3px;height:17px;border-radius:4px;
+    font-size:10px;font-weight:650;font-variant-numeric:tabular-nums;border:1px solid transparent}
+  .chip .va{font-size:8px;font-weight:600;opacity:.65}
+  .chip.W{background:color-mix(in srgb,#0ca30c 20%,var(--surface));color:var(--wink)}
+  .chip.D{background:var(--chip);color:var(--ink2)}
+  .chip.L{background:color-mix(in srgb,#d03b3b 15%,var(--surface));color:var(--link)}
+  .chip.P{background:transparent;border:1px dashed var(--axis);color:var(--muted);font-weight:500}
+  .chip.P.hot{border-color:var(--hi);color:var(--hi);background:color-mix(in srgb,var(--hi) 8%,transparent)}
+  .diag{background:repeating-linear-gradient(135deg,var(--grid2) 0 4px,transparent 4px 8px);border-radius:5px;min-height:36px}
+  .msum{font-size:12px;font-weight:700;text-align:right;align-self:center;font-variant-numeric:tabular-nums}
+  .mwdl{font-size:10.5px;color:var(--ink2);text-align:right;align-self:center;font-variant-numeric:tabular-nums}
+  .mgd{font-size:10.5px;color:var(--muted);text-align:right;align-self:center;font-variant-numeric:tabular-nums}
+  .mrow-km .msum{color:var(--hi)}
+  .mnote{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--ink2);margin-top:11px;padding-top:10px;border-top:1px solid var(--grid)}
+  .mnote span{display:flex;align-items:center;gap:5px}
+  footer{font-size:11.5px;color:var(--muted);line-height:1.7;margin-top:14px}
+  a{color:var(--hi)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>勝ち点の推移と星取表 ─ 第1節〜第15節</h1>
+    <p class="sub">2026 神奈川県社会人サッカーリーグ1部 ／ 縦軸は累積勝ち点（目盛り3pt＝1勝）／ 凡例をクリックで表示オン・オフ、ダブルクリックでそのチームだけ表示</p>
+  </div>
+  <button class="btn" id="theme">ダーク</button>
+</header>
+
+<div class="card">
+  <div class="tools">
+    <div class="modes" id="modes">
+      <button data-m="pts" aria-pressed="true">勝ち点</button>
+      <button data-m="lead">首位との差</button>
+      <button data-m="rank">順位</button>
+    </div>
+    <button class="btn" data-preset="all">全表示</button>
+    <button class="btn" data-preset="top">優勝・3位争い</button>
+    <button class="btn" data-preset="mid">3〜7位</button>
+    <button class="btn" data-preset="km">鎌倉のみ</button>
+    <span class="sp" id="count"></span>
+  </div>
+  <div id="chart"><div class="tip" id="tip"></div></div>
+  <div class="legend" id="legend"></div>
+</div>
+
+
+<div class="card" style="margin-top:14px">
+  <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:4px">
+    <h2 style="font-size:14px;margin:0">星取表 ─ 全90試合</h2>
+    <span style="font-size:11.5px;color:var(--muted)">上段＝ホーム戦／下段＝アウェイ戦。点線は未消化（残り15試合）。クラブ名をクリックすると上のグラフの表示が切り替わります。</span>
+  </div>
+  <div class="mx"><div class="mxgrid" id="mxgrid"></div></div>
+  <div class="mnote">
+    <span><i class="chip W" style="width:34px">3-0</i>勝ち</span>
+    <span><i class="chip D" style="width:34px">1-1</i>引き分け</span>
+    <span><i class="chip L" style="width:34px">0-2</i>負け</span>
+    <span><i class="chip P" style="width:38px">16節</i>未消化</span>
+    <span><i class="chip P hot" style="width:38px">16節</i>鎌倉が絡む残り試合</span>
+  </div>
+</div>
+
+<footer>
+  ・各節終了時点の累積勝ち点。未消化がないよう全クラブ15試合消化時点までを描いています（残り3節）。<br>
+  ・品川CCセカンドとFCSCはグレー、FCSCは破線で区別しています。各線の右端にクラブ名を直接表示しているため、色が見分けにくい場合もそちらで判別できます。<br>
+  ・出典：<a href="https://fakj-shakaijin.com/league/div1/">神奈川県サッカー協会 社会人部会 日程・結果</a>（第1〜15節 全75試合）
+</footer>
+</div>
+
+<script>
+const DATA = {"series": [{"i": 6, "name": "鎌倉インターナショナルFC", "short": "鎌倉", "cl": "#2a78d6", "cd": "#3987e5", "dash": 0, "pts": [0, 0, 1, 2, 2, 5, 8, 11, 12, 15, 15, 16, 16, 19, 22, 23], "gd": [0, -2, -2, -2, -4, -3, 0, 1, 1, 3, 1, 1, -1, 3, 6, 6], "rank": [0, 10, 7, 7, 8, 8, 5, 5, 5, 3, 6, 6, 7, 6, 4, 4], "det": [null, ["L", 3, 0, 2, true], ["D", 1, 1, 1, false], ["D", 5, 0, 0, true], ["L", 0, 0, 2, false], ["W", 9, 1, 0, false], ["W", 7, 3, 0, true], ["W", 4, 1, 0, true], ["D", 2, 0, 0, true], ["W", 8, 2, 0, false], ["L", 3, 1, 3, false], ["D", 1, 1, 1, true], ["L", 5, 1, 3, false], ["W", 0, 4, 0, true], ["W", 9, 4, 1, true], ["D", 7, 2, 2, false]]}, {"i": 4, "name": "FIFTY CLUB", "short": "FIFTY", "cl": "#eb6834", "cd": "#d95926", "dash": 0, "pts": [0, 3, 6, 6, 7, 8, 11, 11, 14, 14, 15, 18, 19, 22, 25, 28], "gd": [0, 2, 7, 5, 5, 5, 7, 6, 7, 6, 6, 11, 11, 12, 14, 15], "rank": [0, 2, 1, 3, 3, 4, 4, 4, 3, 4, 5, 5, 5, 3, 3, 3], "det": [null, ["W", 7, 3, 1, false], ["W", 9, 5, 0, true], ["L", 2, 0, 2, false], ["D", 3, 0, 0, false], ["D", 8, 2, 2, false], ["W", 5, 2, 0, true], ["L", 6, 0, 1, false], ["W", 0, 1, 0, true], ["L", 1, 1, 2, true], ["D", 7, 1, 1, true], ["W", 9, 5, 0, false], ["D", 2, 1, 1, true], ["W", 3, 2, 1, true], ["W", 8, 2, 0, true], ["W", 5, 1, 0, false]]}, {"i": 1, "name": "東急SレイエスFC", "short": "東急S", "cl": "#1baf7a", "cd": "#199e70", "dash": 0, "pts": [0, 0, 1, 4, 7, 10, 13, 16, 17, 20, 23, 24, 27, 30, 33, 36], "gd": [0, -2, -2, -1, 0, 2, 5, 6, 6, 7, 8, 8, 11, 15, 18, 20], "rank": [0, 8, 6, 6, 4, 3, 2, 2, 2, 2, 1, 2, 2, 1, 1, 1], "det": [null, ["L", 0, 2, 4, false], ["D", 6, 1, 1, true], ["W", 8, 1, 0, false], ["W", 9, 1, 0, true], ["W", 2, 3, 1, false], ["W", 3, 4, 1, true], ["W", 5, 1, 0, false], ["D", 7, 0, 0, true], ["W", 4, 2, 1, false], ["W", 0, 1, 0, true], ["D", 6, 1, 1, false], ["W", 8, 3, 0, true], ["W", 9, 4, 0, false], ["W", 2, 3, 0, true], ["W", 3, 3, 1, false]]}, {"i": 0, "name": "神奈川大学SC", "short": "神奈川大", "cl": "#eda100", "cd": "#c98500", "dash": 0, "pts": [0, 3, 6, 9, 12, 13, 16, 19, 19, 22, 22, 25, 28, 28, 28, 29], "gd": [0, 2, 4, 5, 7, 7, 8, 9, 8, 9, 8, 15, 16, 12, 10, 10], "rank": [0, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2], "det": [null, ["W", 1, 4, 2, true], ["W", 8, 2, 0, true], ["W", 3, 2, 1, true], ["W", 6, 2, 0, true], ["D", 5, 0, 0, false], ["W", 2, 2, 1, true], ["W", 7, 3, 2, false], ["L", 4, 0, 1, false], ["W", 9, 2, 1, false], ["L", 1, 0, 1, false], ["W", 8, 7, 0, false], ["W", 3, 2, 1, false], ["L", 6, 0, 4, false], ["L", 5, 0, 2, true], ["D", 2, 3, 3, false]]}, {"i": 2, "name": "エブリサ藤沢ユナイテッド", "short": "エブリサ", "cl": "#e87ba4", "cd": "#d55181", "dash": 0, "pts": [0, 3, 6, 9, 12, 12, 12, 12, 13, 13, 16, 19, 20, 21, 21, 22], "gd": [0, 1, 2, 4, 5, 3, 2, 1, 1, 0, 4, 5, 5, 5, 2, 2], "rank": [0, 5, 3, 2, 2, 2, 3, 3, 4, 6, 4, 4, 3, 4, 7, 5], "det": [null, ["W", 9, 1, 0, true], ["W", 7, 1, 0, false], ["W", 4, 2, 0, true], ["W", 5, 1, 0, false], ["L", 1, 1, 3, true], ["L", 0, 1, 2, false], ["L", 8, 1, 2, true], ["D", 6, 0, 0, false], ["L", 3, 1, 2, false], ["W", 9, 4, 0, false], ["W", 7, 1, 0, true], ["D", 4, 1, 1, false], ["D", 5, 0, 0, true], ["L", 1, 0, 3, false], ["D", 0, 3, 3, true]]}, {"i": 5, "name": "品川CC横浜", "short": "品川横浜", "cl": "#008300", "cd": "#008300", "dash": 0, "pts": [0, 3, 4, 5, 5, 6, 6, 6, 9, 12, 15, 15, 18, 19, 22, 22], "gd": [0, 1, 1, 1, 0, 0, -2, -3, -2, -1, 0, -1, 1, 1, 3, 2], "rank": [0, 4, 5, 4, 6, 6, 7, 9, 7, 7, 7, 7, 6, 7, 5, 6], "det": [null, ["W", 8, 2, 1, false], ["D", 3, 0, 0, true], ["D", 6, 0, 0, false], ["L", 2, 0, 1, true], ["D", 0, 0, 0, true], ["L", 4, 0, 2, false], ["L", 1, 0, 1, true], ["W", 9, 2, 1, false], ["W", 7, 2, 1, true], ["W", 8, 1, 0, true], ["L", 3, 1, 2, false], ["W", 6, 3, 1, true], ["D", 2, 0, 0, false], ["W", 0, 2, 0, false], ["L", 4, 0, 1, true]]}, {"i": 3, "name": "神奈川県教員SC", "short": "県教員", "cl": "#4a3aa7", "cd": "#9085e9", "dash": 0, "pts": [0, 3, 4, 4, 5, 5, 5, 8, 11, 14, 17, 20, 20, 20, 21, 21], "gd": [0, 2, 2, 1, 1, 0, -3, 0, 1, 2, 4, 5, 4, 3, 3, 1], "rank": [0, 3, 4, 5, 5, 7, 8, 6, 6, 5, 3, 3, 4, 5, 6, 7], "det": [null, ["W", 6, 2, 0, false], ["D", 5, 0, 0, false], ["L", 0, 1, 2, false], ["D", 4, 0, 0, true], ["L", 7, 0, 1, false], ["L", 1, 1, 4, false], ["W", 9, 3, 0, true], ["W", 8, 2, 1, true], ["W", 2, 2, 1, true], ["W", 6, 3, 1, true], ["W", 5, 2, 1, true], ["L", 0, 1, 2, true], ["L", 4, 1, 2, false], ["D", 7, 0, 0, true], ["L", 1, 1, 3, true]]}, {"i": 7, "name": "横浜猛蹴FC", "short": "猛蹴", "cl": "#e34948", "cd": "#e66767", "dash": 0, "pts": [0, 0, 0, 1, 4, 7, 7, 7, 8, 8, 9, 9, 10, 13, 14, 15], "gd": [0, -2, -3, -3, 2, 3, 0, -1, -1, -2, -2, -3, -3, -2, -2, -2], "rank": [0, 9, 8, 8, 7, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8, 8], "det": [null, ["L", 4, 1, 3, true], ["L", 2, 0, 1, true], ["D", 9, 1, 1, false], ["W", 8, 5, 0, true], ["W", 3, 1, 0, true], ["L", 6, 0, 3, false], ["L", 0, 2, 3, true], ["D", 1, 0, 0, false], ["L", 5, 1, 2, false], ["D", 4, 1, 1, false], ["L", 2, 0, 1, false], ["D", 9, 2, 2, true], ["W", 8, 1, 0, false], ["D", 3, 0, 0, false], ["D", 6, 2, 2, true]]}, {"i": 8, "name": "品川CCセカンド", "short": "品川2nd", "cl": "#898781", "cd": "#898781", "dash": 0, "pts": [0, 0, 0, 0, 0, 1, 4, 7, 7, 7, 7, 7, 7, 7, 7, 8], "gd": [0, -1, -3, -4, -9, -9, -7, -6, -7, -9, -10, -17, -20, -21, -23, -23], "rank": [0, 6, 9, 10, 10, 10, 9, 8, 9, 9, 9, 9, 9, 9, 9, 9], "det": [null, ["L", 5, 1, 2, true], ["L", 0, 0, 2, false], ["L", 1, 0, 1, true], ["L", 7, 0, 5, false], ["D", 4, 2, 2, true], ["W", 9, 2, 0, false], ["W", 2, 2, 1, false], ["L", 3, 1, 2, false], ["L", 6, 0, 2, true], ["L", 5, 0, 1, false], ["L", 0, 0, 7, true], ["L", 1, 0, 3, false], ["L", 7, 0, 1, true], ["L", 4, 0, 2, false], ["D", 9, 1, 1, true]]}, {"i": 9, "name": "FCSC", "short": "FCSC", "cl": "#898781", "cd": "#898781", "dash": 1, "pts": [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3], "gd": [0, -1, -6, -6, -7, -8, -10, -13, -14, -15, -19, -24, -24, -28, -31, -31], "rank": [0, 7, 10, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10], "det": [null, ["L", 2, 0, 1, false], ["L", 4, 0, 5, false], ["D", 7, 1, 1, true], ["L", 1, 0, 1, false], ["L", 6, 0, 1, true], ["L", 8, 0, 2, true], ["L", 3, 0, 3, false], ["L", 5, 1, 2, true], ["L", 0, 1, 2, true], ["L", 2, 0, 4, true], ["L", 4, 0, 5, true], ["D", 7, 2, 2, false], ["L", 1, 0, 4, true], ["L", 6, 1, 4, false], ["D", 8, 1, 1, false]]}], "short": ["神奈川大", "東急S", "エブリサ", "県教員", "FIFTY", "品川横浜", "鎌倉", "猛蹴", "品川2nd", "FCSC"]};
+const SER = DATA.series, SHORT = DATA.short;
+const R = SER[0].pts.length - 1;
+const KMI = 6;
+let mode='pts';
+let on = new Set(SER.map(s=>s.i));
+
+const PRESETS={ all:SER.map(s=>s.i), top:[6,4,1,0], mid:[4,6,2,5,3], km:[6] };
+const col = s => getComputedStyle(document.documentElement).getPropertyValue('--dummy') ,
+      isDark = () => document.documentElement.dataset.theme==='dark';
+const C = s => isDark()? s.cd : s.cl;
+
+function val(s,r){
+  if(mode==='pts') return s.pts[r];
+  if(mode==='rank') return s.rank[r]||null;
+  const lead = Math.max(...SER.map(x=>x.pts[r]));
+  return s.pts[r]-lead;
+}
+const M={t:14,r:118,b:30,l:38};
+
+function draw(){
+  const host=document.getElementById('chart');
+  const W=Math.max(640, host.clientWidth), H=Math.min(560, Math.max(380, W*0.46));
+  const vis=SER.filter(s=>on.has(s.i));
+  let lo,hi,step,fmt;
+  if(mode==='pts'){ lo=0; hi=Math.ceil(Math.max(3,...SER.map(s=>s.pts[R]))/3)*3; step=3; fmt=v=>v; }
+  else if(mode==='lead'){ hi=0; lo=Math.min(-3,...SER.map(s=>{let m=0;for(let r=1;r<=R;r++)m=Math.min(m,val(s,r));return m;})); lo=Math.floor(lo/3)*3; step=3; fmt=v=>v; }
+  else { lo=10.5; hi=0.5; step=1; fmt=v=>v; }
+  const X=r=> M.l + (W-M.l-M.r)*(r/R);
+  const Y=v=> M.t + (H-M.t-M.b)*(1-(v-lo)/(hi-lo));
+
+  let g='';
+  // gridlines
+  if(mode==='rank'){
+    for(let v=1;v<=10;v++) g+=`<line x1="${M.l}" x2="${W-M.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid2)" stroke-width="1"/>`;
+    for(let v=1;v<=10;v+=1) g+=`<text class="lbl" x="${M.l-8}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;
+  } else {
+    for(let v=lo;v<=hi;v+=step){
+      const major = v%6===0;
+      g+=`<line x1="${M.l}" x2="${W-M.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${major?'var(--grid)':'var(--grid2)'}" stroke-width="1"/>`;
+      if(major) g+=`<text class="lbl" x="${M.l-8}" y="${Y(v)+4}" text-anchor="end">${fmt(v)}</text>`;
+    }
+  }
+  for(let r=0;r<=R;r++){
+    if(r%1===0) g+=`<line x1="${X(r)}" x2="${X(r)}" y1="${M.t}" y2="${H-M.b}" stroke="var(--grid2)" stroke-width="${r%5===0?1:0.5}"/>`;
+    if(r%5===0||r===R) g+=`<text class="lbl" x="${X(r)}" y="${H-M.b+15}" text-anchor="middle">${r===0?'開幕':r+'節'}</text>`;
+  }
+  g+=`<line x1="${M.l}" x2="${W-M.r}" y1="${H-M.b}" y2="${H-M.b}" stroke="var(--axis)" stroke-width="1"/>`;
+
+  // lines
+  const ends=[];
+  vis.forEach(s=>{
+    let dpath='';
+    for(let r=(mode==='rank'?1:0);r<=R;r++){
+      const v=val(s,r); if(v==null)continue;
+      dpath += (dpath?'L':'M')+X(r).toFixed(1)+','+Y(v).toFixed(1)+' ';
+    }
+    const c=C(s), me=s.i===KMI;
+    g+=`<path d="${dpath}" fill="none" stroke="${c}" stroke-width="${me?3:2}" stroke-linejoin="round" stroke-linecap="round"
+        ${s.dash?'stroke-dasharray="6 4"':''} opacity="${me?1:.92}"/>`;
+    for(let r=(mode==='rank'?1:0);r<=R;r++){
+      const v=val(s,r); if(v==null)continue;
+      g+=`<circle cx="${X(r)}" cy="${Y(v)}" r="${me?3.1:2.4}" fill="${c}" stroke="var(--surface)" stroke-width="1.3"/>`;
+    }
+    ends.push({s,y:Y(val(s,R)),c});
+  });
+  // end labels (collision avoidance)
+  ends.sort((a,b)=>a.y-b.y);
+  const MINGAP=15;
+  for(let i=1;i<ends.length;i++) if(ends[i].y-ends[i-1].y<MINGAP) ends[i].y=ends[i-1].y+MINGAP;
+  const over=ends.length?ends[ends.length-1].y-(H-M.b):0;
+  if(over>0) ends.forEach(e=>e.y-=over);
+  ends.forEach(e=>{
+    const x=X(R)+10, me=e.s.i===KMI;
+    g+=`<line x1="${X(R)+2}" x2="${x-3}" y1="${Y(val(e.s,R))}" y2="${e.y}" stroke="${e.c}" stroke-width="1" opacity=".5"/>`;
+    g+=`<text class="endlbl" x="${x}" y="${e.y}" fill="${e.c}">${e.s.short}</text>`;
+    g+=`<text class="endval" x="${W-M.r+106}" y="${e.y}" text-anchor="end" fill="${me?'var(--hi)':'var(--ink2)'}">${
+        mode==='rank'? e.s.rank[R]+'位' : mode==='lead'? val(e.s,R)+'' : e.s.pts[R]+'pt'}</text>`;
+  });
+  g+=`<rect class="hit" x="${M.l}" y="${M.t}" width="${W-M.l-M.r}" height="${H-M.t-M.b}"/>`;
+  g+=`<line id="cross" x1="0" x2="0" y1="${M.t}" y2="${H-M.b}" stroke="var(--axis)" stroke-width="1" opacity="0"/>`;
+
+  host.querySelector('svg')?.remove();
+  host.insertAdjacentHTML('afterbegin',`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">${g}</svg>`);
+  const svg=host.querySelector('svg'), cross=svg.querySelector('#cross'), tip=document.getElementById('tip');
+  const toR = ev=>{
+    const b=svg.getBoundingClientRect(), sx=W/b.width;
+    const px=(ev.clientX-b.left)*sx;
+    return Math.max(0,Math.min(R,Math.round((px-M.l)/((W-M.l-M.r)/R))));
+  };
+  svg.querySelector('.hit').addEventListener('mousemove',ev=>{
+    const r=toR(ev); cross.setAttribute('opacity','1');
+    cross.setAttribute('x1',X(r)); cross.setAttribute('x2',X(r));
+    const list=vis.filter(s=>val(s,r)!=null).sort((a,b)=> mode==='rank'? a.rank[r]-b.rank[r] : b.pts[r]-a.pts[r]);
+    tip.innerHTML=`<h4><span>${r===0?'開幕前':'第'+r+'節終了'}</span><span>${list.length}クラブ</span></h4>`+
+      list.map(s=>{
+        const d=s.det[r]; const mk=d? (d[0]==='W'?'○':d[0]==='D'?'△':'●')+` ${SHORT[d[1]]} ${d[2]}-${d[3]}`:'';
+        return `<div class="r ${s.i===KMI?'me':''}"><i style="background:${C(s)}"></i><span class="n">${s.short}</span>
+          <span class="p">${mode==='rank'? s.rank[r]+'位' : s.pts[r]+'pt'}</span><span class="m">${mk}</span></div>`;
+      }).join('');
+    tip.style.opacity=1;
+    const b=svg.getBoundingClientRect(), scale=b.width/W;
+    let lx=X(r)*scale+14; if(lx+tip.offsetWidth>b.width) lx=X(r)*scale-tip.offsetWidth-14;
+    tip.style.left=Math.max(0,lx)+'px';
+    tip.style.top=Math.min(b.height-tip.offsetHeight, Math.max(0,(ev.clientY-b.top)-tip.offsetHeight/2))+'px';
+  });
+  svg.querySelector('.hit').addEventListener('mouseleave',()=>{ tip.style.opacity=0; cross.setAttribute('opacity','0'); });
+  document.getElementById('count').textContent=`${vis.length} / ${SER.length} クラブ表示中`;
+}
+
+function legend(){
+  document.getElementById('legend').innerHTML=SER.map(s=>
+    `<div class="lg ${on.has(s.i)?'':'off'} ${s.i===KMI?'km':''}" data-i="${s.i}">
+      <span class="sw" style="background:${C(s)};${s.dash?'background:repeating-linear-gradient(90deg,'+C(s)+' 0 5px,transparent 5px 8px)':''}"></span>
+      <span>${s.name}</span><span class="v">${s.pts[R]}pt</span></div>`).join('');
+  document.querySelectorAll('.lg').forEach(el=>{
+    const i=+el.dataset.i;
+    el.onclick=e=>{ if(e.detail>1)return; on.has(i)?on.delete(i):on.add(i); if(!on.size)on.add(i); legend(); draw(); };
+    el.ondblclick=()=>{ on=new Set([i]); legend(); draw(); };
+  });
+}
+document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{ on=new Set(PRESETS[b.dataset.preset]); legend(); draw(); });
+document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{
+  mode=b.dataset.m;
+  document.querySelectorAll('#modes button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  draw();
+});
+document.getElementById('theme').onclick=e=>{ const d=isDark();
+  document.documentElement.dataset.theme=d?'light':'dark'; e.target.textContent=d?'ダーク':'ライト'; legend(); draw(); };
+legend(); draw();
+new ResizeObserver(()=>draw()).observe(document.getElementById('chart'));
+
+/* ===== 星取表 ===== */
+const MX = {"cell": [[[], [{"rd": 1, "v": "H", "gf": 4, "ga": 2, "res": "W"}, {"rd": 10, "v": "A", "gf": 0, "ga": 1, "res": "L"}], [{"rd": 6, "v": "H", "gf": 2, "ga": 1, "res": "W"}, {"rd": 15, "v": "A", "gf": 3, "ga": 3, "res": "D"}], [{"rd": 3, "v": "H", "gf": 2, "ga": 1, "res": "W"}, {"rd": 12, "v": "A", "gf": 2, "ga": 1, "res": "W"}], [{"rd": 17, "v": "H", "pend": 1}, {"rd": 8, "v": "A", "gf": 0, "ga": 1, "res": "L"}], [{"rd": 14, "v": "H", "gf": 0, "ga": 2, "res": "L"}, {"rd": 5, "v": "A", "gf": 0, "ga": 0, "res": "D"}], [{"rd": 4, "v": "H", "gf": 2, "ga": 0, "res": "W"}, {"rd": 13, "v": "A", "gf": 0, "ga": 4, "res": "L"}], [{"rd": 16, "v": "H", "pend": 1}, {"rd": 7, "v": "A", "gf": 3, "ga": 2, "res": "W"}], [{"rd": 2, "v": "H", "gf": 2, "ga": 0, "res": "W"}, {"rd": 11, "v": "A", "gf": 7, "ga": 0, "res": "W"}], [{"rd": 18, "v": "H", "pend": 1}, {"rd": 9, "v": "A", "gf": 2, "ga": 1, "res": "W"}]], [[{"rd": 10, "v": "H", "gf": 1, "ga": 0, "res": "W"}, {"rd": 1, "v": "A", "gf": 2, "ga": 4, "res": "L"}], [], [{"rd": 14, "v": "H", "gf": 3, "ga": 0, "res": "W"}, {"rd": 5, "v": "A", "gf": 3, "ga": 1, "res": "W"}], [{"rd": 6, "v": "H", "gf": 4, "ga": 1, "res": "W"}, {"rd": 15, "v": "A", "gf": 3, "ga": 1, "res": "W"}], [{"rd": 18, "v": "H", "pend": 1}, {"rd": 9, "v": "A", "gf": 2, "ga": 1, "res": "W"}], [{"rd": 16, "v": "H", "pend": 1}, {"rd": 7, "v": "A", "gf": 1, "ga": 0, "res": "W"}], [{"rd": 2, "v": "H", "gf": 1, "ga": 1, "res": "D"}, {"rd": 11, "v": "A", "gf": 1, "ga": 1, "res": "D"}], [{"rd": 8, "v": "H", "gf": 0, "ga": 0, "res": "D"}, {"rd": 17, "v": "A", "pend": 1}], [{"rd": 12, "v": "H", "gf": 3, "ga": 0, "res": "W"}, {"rd": 3, "v": "A", "gf": 1, "ga": 0, "res": "W"}], [{"rd": 4, "v": "H", "gf": 1, "ga": 0, "res": "W"}, {"rd": 13, "v": "A", "gf": 4, "ga": 0, "res": "W"}]], [[{"rd": 15, "v": "H", "gf": 3, "ga": 3, "res": "D"}, {"rd": 6, "v": "A", "gf": 1, "ga": 2, "res": "L"}], [{"rd": 5, "v": "H", "gf": 1, "ga": 3, "res": "L"}, {"rd": 14, "v": "A", "gf": 0, "ga": 3, "res": "L"}], [], [{"rd": 18, "v": "H", "pend": 1}, {"rd": 9, "v": "A", "gf": 1, "ga": 2, "res": "L"}], [{"rd": 3, "v": "H", "gf": 2, "ga": 0, "res": "W"}, {"rd": 12, "v": "A", "gf": 1, "ga": 1, "res": "D"}], [{"rd": 13, "v": "H", "gf": 0, "ga": 0, "res": "D"}, {"rd": 4, "v": "A", "gf": 1, "ga": 0, "res": "W"}], [{"rd": 17, "v": "H", "pend": 1}, {"rd": 8, "v": "A", "gf": 0, "ga": 0, "res": "D"}], [{"rd": 11, "v": "H", "gf": 1, "ga": 0, "res": "W"}, {"rd": 2, "v": "A", "gf": 1, "ga": 0, "res": "W"}], [{"rd": 7, "v": "H", "gf": 1, "ga": 2, "res": "L"}, {"rd": 16, "v": "A", "pend": 1}], [{"rd": 1, "v": "H", "gf": 1, "ga": 0, "res": "W"}, {"rd": 10, "v": "A", "gf": 4, "ga": 0, "res": "W"}]], [[{"rd": 12, "v": "H", "gf": 1, "ga": 2, "res": "L"}, {"rd": 3, "v": "A", "gf": 1, "ga": 2, "res": "L"}], [{"rd": 15, "v": "H", "gf": 1, "ga": 3, "res": "L"}, {"rd": 6, "v": "A", "gf": 1, "ga": 4, "res": "L"}], [{"rd": 9, "v": "H", "gf": 2, "ga": 1, "res": "W"}, {"rd": 18, "v": "A", "pend": 1}], [], [{"rd": 4, "v": "H", "gf": 0, "ga": 0, "res": "D"}, {"rd": 13, "v": "A", "gf": 1, "ga": 2, "res": "L"}], [{"rd": 11, "v": "H", "gf": 2, "ga": 1, "res": "W"}, {"rd": 2, "v": "A", "gf": 0, "ga": 0, "res": "D"}], [{"rd": 10, "v": "H", "gf": 3, "ga": 1, "res": "W"}, {"rd": 1, "v": "A", "gf": 2, "ga": 0, "res": "W"}], [{"rd": 14, "v": "H", "gf": 0, "ga": 0, "res": "D"}, {"rd": 5, "v": "A", "gf": 0, "ga": 1, "res": "L"}], [{"rd": 8, "v": "H", "gf": 2, "ga": 1, "res": "W"}, {"rd": 17, "v": "A", "pend": 1}], [{"rd": 7, "v": "H", "gf": 3, "ga": 0, "res": "W"}, {"rd": 16, "v": "A", "pend": 1}]], [[{"rd": 8, "v": "H", "gf": 1, "ga": 0, "res": "W"}, {"rd": 17, "v": "A", "pend": 1}], [{"rd": 9, "v": "H", "gf": 1, "ga": 2, "res": "L"}, {"rd": 18, "v": "A", "pend": 1}], [{"rd": 12, "v": "H", "gf": 1, "ga": 1, "res": "D"}, {"rd": 3, "v": "A", "gf": 0, "ga": 2, "res": "L"}], [{"rd": 13, "v": "H", "gf": 2, "ga": 1, "res": "W"}, {"rd": 4, "v": "A", "gf": 0, "ga": 0, "res": "D"}], [], [{"rd": 6, "v": "H", "gf": 2, "ga": 0, "res": "W"}, {"rd": 15, "v": "A", "gf": 1, "ga": 0, "res": "W"}], [{"rd": 16, "v": "H", "pend": 1}, {"rd": 7, "v": "A", "gf": 0, "ga": 1, "res": "L"}], [{"rd": 10, "v": "H", "gf": 1, "ga": 1, "res": "D"}, {"rd": 1, "v": "A", "gf": 3, "ga": 1, "res": "W"}], [{"rd": 14, "v": "H", "gf": 2, "ga": 0, "res": "W"}, {"rd": 5, "v": "A", "gf": 2, "ga": 2, "res": "D"}], [{"rd": 2, "v": "H", "gf": 5, "ga": 0, "res": "W"}, {"rd": 11, "v": "A", "gf": 5, "ga": 0, "res": "W"}]], [[{"rd": 5, "v": "H", "gf": 0, "ga": 0, "res": "D"}, {"rd": 14, "v": "A", "gf": 2, "ga": 0, "res": "W"}], [{"rd": 7, "v": "H", "gf": 0, "ga": 1, "res": "L"}, {"rd": 16, "v": "A", "pend": 1}], [{"rd": 4, "v": "H", "gf": 0, "ga": 1, "res": "L"}, {"rd": 13, "v": "A", "gf": 0, "ga": 0, "res": "D"}], [{"rd": 2, "v": "H", "gf": 0, "ga": 0, "res": "D"}, {"rd": 11, "v": "A", "gf": 1, "ga": 2, "res": "L"}], [{"rd": 15, "v": "H", "gf": 0, "ga": 1, "res": "L"}, {"rd": 6, "v": "A", "gf": 0, "ga": 2, "res": "L"}], [], [{"rd": 12, "v": "H", "gf": 3, "ga": 1, "res": "W"}, {"rd": 3, "v": "A", "gf": 0, "ga": 0, "res": "D"}], [{"rd": 9, "v": "H", "gf": 2, "ga": 1, "res": "W"}, {"rd": 18, "v": "A", "pend": 1}], [{"rd": 10, "v": "H", "gf": 1, "ga": 0, "res": "W"}, {"rd": 1, "v": "A", "gf": 2, "ga": 1, "res": "W"}], [{"rd": 17, "v": "H", "pend": 1}, {"rd": 8, "v": "A", "gf": 2, "ga": 1, "res": "W"}]], [[{"rd": 13, "v": "H", "gf": 4, "ga": 0, "res": "W"}, {"rd": 4, "v": "A", "gf": 0, "ga": 2, "res": "L"}], [{"rd": 11, "v": "H", "gf": 1, "ga": 1, "res": "D"}, {"rd": 2, "v": "A", "gf": 1, "ga": 1, "res": "D"}], [{"rd": 8, "v": "H", "gf": 0, "ga": 0, "res": "D"}, {"rd": 17, "v": "A", "pend": 1}], [{"rd": 1, "v": "H", "gf": 0, "ga": 2, "res": "L"}, {"rd": 10, "v": "A", "gf": 1, "ga": 3, "res": "L"}], [{"rd": 7, "v": "H", "gf": 1, "ga": 0, "res": "W"}, {"rd": 16, "v": "A", "pend": 1}], [{"rd": 3, "v": "H", "gf": 0, "ga": 0, "res": "D"}, {"rd": 12, "v": "A", "gf": 1, "ga": 3, "res": "L"}], [], [{"rd": 6, "v": "H", "gf": 3, "ga": 0, "res": "W"}, {"rd": 15, "v": "A", "gf": 2, "ga": 2, "res": "D"}], [{"rd": 18, "v": "H", "pend": 1}, {"rd": 9, "v": "A", "gf": 2, "ga": 0, "res": "W"}], [{"rd": 14, "v": "H", "gf": 4, "ga": 1, "res": "W"}, {"rd": 5, "v": "A", "gf": 1, "ga": 0, "res": "W"}]], [[{"rd": 7, "v": "H", "gf": 2, "ga": 3, "res": "L"}, {"rd": 16, "v": "A", "pend": 1}], [{"rd": 17, "v": "H", "pend": 1}, {"rd": 8, "v": "A", "gf": 0, "ga": 0, "res": "D"}], [{"rd": 2, "v": "H", "gf": 0, "ga": 1, "res": "L"}, {"rd": 11, "v": "A", "gf": 0, "ga": 1, "res": "L"}], [{"rd": 5, "v": "H", "gf": 1, "ga": 0, "res": "W"}, {"rd": 14, "v": "A", "gf": 0, "ga": 0, "res": "D"}], [{"rd": 1, "v": "H", "gf": 1, "ga": 3, "res": "L"}, {"rd": 10, "v": "A", "gf": 1, "ga": 1, "res": "D"}], [{"rd": 18, "v": "H", "pend": 1}, {"rd": 9, "v": "A", "gf": 1, "ga": 2, "res": "L"}], [{"rd": 15, "v": "H", "gf": 2, "ga": 2, "res": "D"}, {"rd": 6, "v": "A", "gf": 0, "ga": 3, "res": "L"}], [], [{"rd": 4, "v": "H", "gf": 5, "ga": 0, "res": "W"}, {"rd": 13, "v": "A", "gf": 1, "ga": 0, "res": "W"}], [{"rd": 12, "v": "H", "gf": 2, "ga": 2, "res": "D"}, {"rd": 3, "v": "A", "gf": 1, "ga": 1, "res": "D"}]], [[{"rd": 11, "v": "H", "gf": 0, "ga": 7, "res": "L"}, {"rd": 2, "v": "A", "gf": 0, "ga": 2, "res": "L"}], [{"rd": 3, "v": "H", "gf": 0, "ga": 1, "res": "L"}, {"rd": 12, "v": "A", "gf": 0, "ga": 3, "res": "L"}], [{"rd": 16, "v": "H", "pend": 1}, {"rd": 7, "v": "A", "gf": 2, "ga": 1, "res": "W"}], [{"rd": 17, "v": "H", "pend": 1}, {"rd": 8, "v": "A", "gf": 1, "ga": 2, "res": "L"}], [{"rd": 5, "v": "H", "gf": 2, "ga": 2, "res": "D"}, {"rd": 14, "v": "A", "gf": 0, "ga": 2, "res": "L"}], [{"rd": 1, "v": "H", "gf": 1, "ga": 2, "res": "L"}, {"rd": 10, "v": "A", "gf": 0, "ga": 1, "res": "L"}], [{"rd": 9, "v": "H", "gf": 0, "ga": 2, "res": "L"}, {"rd": 18, "v": "A", "pend": 1}], [{"rd": 13, "v": "H", "gf": 0, "ga": 1, "res": "L"}, {"rd": 4, "v": "A", "gf": 0, "ga": 5, "res": "L"}], [], [{"rd": 15, "v": "H", "gf": 1, "ga": 1, "res": "D"}, {"rd": 6, "v": "A", "gf": 2, "ga": 0, "res": "W"}]], [[{"rd": 9, "v": "H", "gf": 1, "ga": 2, "res": "L"}, {"rd": 18, "v": "A", "pend": 1}], [{"rd": 13, "v": "H", "gf": 0, "ga": 4, "res": "L"}, {"rd": 4, "v": "A", "gf": 0, "ga": 1, "res": "L"}], [{"rd": 10, "v": "H", "gf": 0, "ga": 4, "res": "L"}, {"rd": 1, "v": "A", "gf": 0, "ga": 1, "res": "L"}], [{"rd": 16, "v": "H", "pend": 1}, {"rd": 7, "v": "A", "gf": 0, "ga": 3, "res": "L"}], [{"rd": 11, "v": "H", "gf": 0, "ga": 5, "res": "L"}, {"rd": 2, "v": "A", "gf": 0, "ga": 5, "res": "L"}], [{"rd": 8, "v": "H", "gf": 1, "ga": 2, "res": "L"}, {"rd": 17, "v": "A", "pend": 1}], [{"rd": 5, "v": "H", "gf": 0, "ga": 1, "res": "L"}, {"rd": 14, "v": "A", "gf": 1, "ga": 4, "res": "L"}], [{"rd": 3, "v": "H", "gf": 1, "ga": 1, "res": "D"}, {"rd": 12, "v": "A", "gf": 2, "ga": 2, "res": "D"}], [{"rd": 6, "v": "H", "gf": 0, "ga": 2, "res": "L"}, {"rd": 15, "v": "A", "gf": 1, "ga": 1, "res": "D"}], []]], "tot": [{"pt": 29, "w": 9, "d": 2, "l": 4, "gf": 29, "ga": 19, "gd": 10, "pl": 15}, {"pt": 36, "w": 11, "d": 3, "l": 1, "gf": 30, "ga": 10, "gd": 20, "pl": 15}, {"pt": 22, "w": 6, "d": 4, "l": 5, "gf": 18, "ga": 16, "gd": 2, "pl": 15}, {"pt": 21, "w": 6, "d": 3, "l": 6, "gf": 19, "ga": 18, "gd": 1, "pl": 15}, {"pt": 28, "w": 8, "d": 4, "l": 3, "gf": 26, "ga": 11, "gd": 15, "pl": 15}, {"pt": 22, "w": 6, "d": 4, "l": 5, "gf": 13, "ga": 11, "gd": 2, "pl": 15}, {"pt": 23, "w": 6, "d": 5, "l": 4, "gf": 21, "ga": 15, "gd": 6, "pl": 15}, {"pt": 15, "w": 3, "d": 6, "l": 6, "gf": 17, "ga": 19, "gd": -2, "pl": 15}, {"pt": 8, "w": 2, "d": 2, "l": 11, "gf": 9, "ga": 32, "gd": -23, "pl": 15}, {"pt": 3, "w": 0, "d": 3, "l": 12, "gf": 7, "ga": 38, "gd": -31, "pl": 15}], "order": [1, 0, 4, 6, 2, 5, 3, 7, 8, 9]};
+const byIdx = {}; SER.forEach(s=>byIdx[s.i]=s);
+function matrix(){
+  const ord=MX.order, g=document.getElementById('mxgrid');
+  let h=`<div class="mh l">クラブ</div>`;
+  ord.forEach(t=>h+=`<div class="mh">${SHORT[t]}</div>`);
+  h+=`<div class="mh">Pt</div><div class="mh">勝分敗</div><div class="mh">得失</div>`;
+  ord.forEach((t,ri)=>{
+    const s=byIdx[t], me=t===KMI;
+    h+=`<div class="mrn ${on.has(t)?'':'off'} ${me?'mrow-km':''}" data-i="${t}">
+          <span class="rk">${ri+1}</span><span class="sw" style="background:${C(s)}"></span>
+          <span style="overflow:hidden;text-overflow:ellipsis">${s.short}</span></div>`;
+    ord.forEach(o=>{
+      if(o===t){ h+=`<div class="diag"></div>`; return; }
+      const cs=MX.cell[t][o];
+      h+=`<div class="mc">`+cs.map(c=>{
+        if(c.pend){ const hot=(t===KMI||o===KMI); return `<div class="chip P ${hot?'hot':''}" title="第${c.rd}節 ${c.v==='H'?'ホーム':'アウェイ'}">${c.rd}節<span class="va">${c.v}</span></div>`; }
+        return `<div class="chip ${c.res}" title="第${c.rd}節 ${c.v==='H'?'ホーム':'アウェイ'} ${SHORT[t]} ${c.gf}-${c.ga} ${SHORT[o]}">${c.gf}-${c.ga}<span class="va">${c.v}</span></div>`;
+      }).join('')+`</div>`;
+    });
+    const x=MX.tot[t];
+    h+=`<div class="msum ${me?'':''}" style="${me?'color:var(--hi)':''}">${x.pt}</div>
+        <div class="mwdl">${x.w}-${x.d}-${x.l}</div>
+        <div class="mgd">${x.gd>0?'+':''}${x.gd}</div>`;
+  });
+  g.innerHTML=h;
+  g.querySelectorAll('.mrn').forEach(el=>{
+    const i=+el.dataset.i;
+    el.onclick=e=>{ if(e.detail>1)return; on.has(i)?on.delete(i):on.add(i); if(!on.size)on.add(i); legend(); draw(); matrix(); };
+    el.ondblclick=()=>{ on=new Set([i]); legend(); draw(); matrix(); };
+  });
+}
+const _legend=legend, _draw=draw;
+legend=function(){ _legend(); };
+document.querySelectorAll('[data-preset]').forEach(b=>{ const o=b.onclick; b.onclick=()=>{o(); matrix();}; });
+document.querySelectorAll('#modes button').forEach(b=>{ const o=b.onclick; b.onclick=()=>{o();}; });
+(function(){ const th=document.getElementById('theme'); const o=th.onclick; th.onclick=e=>{o(e); matrix();}; })();
+matrix();
+
+</script>
+</body>
+</html>

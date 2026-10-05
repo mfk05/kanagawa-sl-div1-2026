@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3位入りシミュレーター｜鎌倉インターナショナルFC</title>
+<style>
+  :root{
+    color-scheme:light;
+    --page:#f9f9f7; --surface:#fcfcfb; --surface2:#f4f3ef;
+    --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,.10);
+    --hi:#2a78d6; --good:#0ca30c; --goodink:#006300; --bad:#d03b3b;
+    --bar:#b9b7ad; --bardraw:#dedcd2; --chip:#f0efec; --chipon:#0b0b0b;
+    --shadow:0 1px 2px rgba(11,11,11,.05);
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --page:#0d0d0d; --surface:#1a1a19; --surface2:#232321;
+    --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10);
+    --hi:#3987e5; --good:#0ca30c; --goodink:#0ca30c; --bad:#e66767;
+    --bar:#56554f; --bardraw:#3d3d38; --chip:#262624; --chipon:#fff;
+    --shadow:none;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);padding:20px 16px 60px;
+    font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;font-size:15px;line-height:1.55}
+  .wrap{max-width:1120px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  h1{font-size:19px;margin:0 0 3px;letter-spacing:-.01em}
+  .sub{font-size:12.5px;color:var(--muted);margin:0}
+  h2{font-size:14px;margin:0 0 10px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  h2 span{font-size:11.5px;color:var(--muted);font-weight:400}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink2);border-radius:8px;
+    padding:7px 12px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .btn:hover{border-color:var(--axis);color:var(--ink)}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+
+  .verdict{display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+  @media(max-width:860px){.verdict{grid-template-columns:1fr 1fr}}
+  .vt{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+  .vt .lab{font-size:11.5px;color:var(--muted);margin-bottom:4px}
+  .vt .big{font-size:30px;font-weight:680;letter-spacing:-.025em;line-height:1.05}
+  .vt .big small{font-size:14px;font-weight:500;color:var(--ink2);margin-left:3px}
+  .vt .note{font-size:11.5px;color:var(--ink2);margin-top:4px}
+  .vt.alive{border-color:color-mix(in srgb,var(--good) 45%,transparent)} .vt.alive .big{color:var(--goodink)}
+  .vt.dead{border-color:color-mix(in srgb,var(--bad) 55%,transparent)} .vt.dead .big{color:var(--bad)}
+  .meter{height:6px;border-radius:3px;background:var(--grid);margin-top:8px;overflow:hidden}
+  .meter i{display:block;height:100%;background:var(--hi);border-radius:3px;transition:width .5s ease}
+
+  .rounds{display:grid;grid-template-columns:repeat(auto-fit,minmax(324px,1fr));gap:12px}
+  .rd{border:1px solid var(--grid);border-radius:11px;padding:10px 11px;background:var(--surface2)}
+  .rd.locked{background:transparent;border-style:dashed}
+  .rd h3{font-size:12px;margin:0 0 8px;color:var(--ink2);display:flex;justify-content:space-between;align-items:baseline}
+  .rd h3 em{font-style:normal;color:var(--muted);font-weight:400;font-size:11px}
+  .mt{display:grid;grid-template-columns:1fr 92px;gap:8px;align-items:center;padding:3px 0}
+  .mt .tm{font-size:12px;display:flex;align-items:center;gap:4px;overflow:hidden;white-space:nowrap}
+  .mt .tm .vs{color:var(--muted);font-size:10px}
+  .mt.km .tm{color:var(--hi);font-weight:650}
+  .score{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums;text-align:center;
+    background:var(--chip);border-radius:5px;padding:2px 0;color:var(--ink2)}
+  .mt.km .score{background:color-mix(in srgb,var(--hi) 15%,transparent);color:var(--hi)}
+  .seg3{display:flex;gap:2px}
+  .seg3 button{flex:1;height:23px;border:1px solid var(--border);background:var(--chip);color:var(--ink2);
+    font-size:10.5px;border-radius:5px;cursor:pointer;font-family:inherit;padding:0}
+  .seg3 button:hover{border-color:var(--axis)}
+  .seg3 button[aria-pressed="true"]{background:var(--chipon);color:var(--surface);border-color:var(--chipon);font-weight:650}
+
+  .stgrid{display:grid;grid-template-columns:26px minmax(96px,168px) 1fr 34px 40px 62px;gap:0 10px;align-items:center}
+  .sthead{font-size:10.5px;color:var(--muted);padding-bottom:5px}
+  .strow{height:40px}
+  .strow .nm{font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .strow.km .nm,.strow.km .rk,.strow.km .pt{color:var(--hi)}
+  .rk{font-size:13px;font-weight:650;text-align:right;font-variant-numeric:tabular-nums}
+  .pl{font-size:11px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+  .pt{font-size:15px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+  .rel{font-size:10px;text-align:right;line-height:1.2;color:var(--muted)}
+  .barwrap{position:relative;height:22px}
+  .seg{position:absolute;top:0;height:22px;border-radius:3px;background:var(--bar)}
+  .seg.d{background:var(--bardraw);border:1px solid var(--axis)}
+  .strow.km .seg{background:var(--hi)}
+  .strow.km .seg.d{background:color-mix(in srgb,var(--hi) 30%,var(--surface));border-color:var(--hi)}
+  .pot{position:absolute;top:0;height:22px;border-radius:3px;border:1.5px dashed var(--axis);opacity:.65}
+  .glz{position:absolute;top:-4px;bottom:-4px;width:1px;background:var(--grid)}
+  .axl{position:relative;height:13px;font-size:9.5px;color:var(--muted)}
+  .axl span{position:absolute;transform:translateX(-50%);font-variant-numeric:tabular-nums}
+
+  .pfilters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;font-size:12px}
+  .grp{border:1px solid var(--grid);border-radius:10px;margin-bottom:6px;overflow:hidden}
+  .grp>summary{cursor:pointer;padding:7px 11px;font-size:12.5px;display:flex;gap:10px;align-items:center;background:var(--surface2);list-style:none}
+  .grp>summary::-webkit-details-marker{display:none}
+  .grp>summary .p{font-weight:700;font-variant-numeric:tabular-nums;min-width:42px}
+  .grp>summary .cnt{margin-left:auto;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .pill{font-size:10.5px;padding:1px 7px;border-radius:999px;border:1px solid var(--border)}
+  .pill.ok{color:var(--goodink);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
+  .pill.ng{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,transparent)}
+  .plist{padding:6px 10px 10px;display:flex;flex-direction:column;gap:3px;max-height:300px;overflow:auto}
+  .prow{display:flex;gap:3px;align-items:center;font-size:11px}
+  .prow .c{width:34px;height:19px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:650;border:1px solid var(--border)}
+  .c.W{background:color-mix(in srgb,var(--good) 22%,var(--surface));color:var(--goodink)}
+  .c.D{background:var(--chip);color:var(--ink2)}
+  .c.L{background:color-mix(in srgb,var(--bad) 16%,var(--surface));color:var(--bad)}
+  .prow .tail{margin-left:8px;color:var(--muted)}
+  .prow.dead{opacity:.3;text-decoration:line-through}
+  .oppcols{display:flex;gap:3px;font-size:9px;color:var(--muted);margin-bottom:5px}
+  .oppcols div{width:34px;text-align:center;line-height:1.15}
+
+  .reqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(224px,1fr));gap:9px}
+  .req{border:1px solid var(--grid);border-radius:10px;padding:9px 11px;font-size:12px;background:var(--surface2)}
+  .req b{display:block;font-size:12.5px;margin-bottom:2px}
+  .req .n{font-size:11.5px;color:var(--ink2)}
+  .req.danger{border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+  .req.free{opacity:.55}
+  footer{font-size:11.5px;color:var(--muted);line-height:1.75;margin-top:12px}
+  .busy{opacity:.45;pointer-events:none}
+  a{color:var(--hi)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>鎌倉インターナショナルFC ─ 3位入りシミュレーター</h1>
+    <p class="sub">2026 神奈川県社会人サッカーリーグ1部 ／ <b>第15節終了時点</b>（10/4 横浜猛蹴と2-2）／ 全チーム15試合消化・鎌倉は残り3試合 ／ 順位決定：勝点 → 得失点差 → 総得点 → 直接対決</p>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn" id="reset">予想をリセット</button>
+    <button class="btn" id="theme">ダーク</button>
+  </div>
+</header>
+
+<div class="verdict">
+  <div class="vt alive" id="v1">
+    <div class="lab">3位以内の可能性</div>
+    <div class="big" id="v1big">あり</div>
+    <div class="note" id="v1note">数学的にまだ到達可能</div>
+  </div>
+  <div class="vt">
+    <div class="lab">生き残っている鎌倉の道筋</div>
+    <div class="big" id="v2big">8<small>/27</small></div>
+    <div class="note" id="v2note">残り3試合の勝敗パターン</div>
+    <div class="meter"><i id="v2bar" style="width:30%"></i></div>
+  </div>
+  <div class="vt">
+    <div class="lab">3位以内 確率（実力モデル）</div>
+    <div class="big" id="v3big">–<small>%</small></div>
+    <div class="note">得点力ベースの2万回シミュレーション</div>
+  </div>
+  <div class="vt">
+    <div class="lab">3位に必要な最終勝点</div>
+    <div class="big" id="v4big">28<small>pt〜</small></div>
+    <div class="note" id="v4note">29pt以上なら必ず可能性が残る</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>① 着地見込み <span>1マス＝3pt＝1勝。薄い実線＝引き分け(1pt)、点線＝残り試合で伸びうる分</span></h2>
+  <div class="stgrid sthead"><div>順</div><div>クラブ</div><div><div class="axl" id="axl"></div></div><div style="text-align:right">試</div><div style="text-align:right">Pt</div><div style="text-align:right">鎌倉比</div></div>
+  <div id="stand"></div>
+</div>
+
+<div class="card">
+  <h2>② 残りの結果を入れる <span>確定分はスコア表示。未消化の試合に勝／分／敗を入れるたび、下のパターンが消えます</span></h2>
+  <div class="rounds" id="rounds"></div>
+</div>
+
+<div class="card">
+  <h2>③ 鎌倉の残り3試合 ─ 全27パターン <span>「3位以内が数学的に残るか」で判定</span></h2>
+  <div class="pfilters">
+    <label><input type="checkbox" id="onlyalive" checked> 生存パターンのみ表示</label>
+    <span style="color:var(--muted)" id="pstat"></span>
+  </div>
+  <div id="groups"></div>
+</div>
+
+<div class="card">
+  <h2>④ ライバル条件 <span>鎌倉が「現在の最良ケース」で終わったとき、各クラブをどこまで抑える必要があるか</span></h2>
+  <div class="reqs" id="reqs"></div>
+</div>
+
+<footer>
+  ・「可能性あり」は<b>数学的に到達可能</b>という意味で、確率ではありません。同勝点は得失点差→総得点→直接対決で決まるため、判定は「同勝点なら鎌倉が上回れる」前提の楽観側で計算しています。<br>
+  ・確率は各クラブの得点／失点からポアソン分布で試合結果を生成する簡易モデルによるもので、公式なものではありません。<br>
+  ・出典：<a href="https://fakj-shakaijin.com/standings/leaguediv1/">神奈川県サッカー協会 社会人部会 順位表</a> ／ <a href="https://fakj-shakaijin.com/league/div1/">日程・結果</a>
+</footer>
+</div>
+
+<script>
+const N=["神奈川大学SC","東急SレイエスFC","エブリサ藤沢ユナイテッド","神奈川県教員SC","FIFTY CLUB","品川CC横浜","鎌倉インターナショナルFC","横浜猛蹴FC","品川CCセカンド","FCSC"];
+const S=["神奈川大","東急S","エブリサ","県教員","FIFTY","品川横浜","鎌倉","猛蹴","品川2nd","FCSC"];
+const KU=0,TQ=1,EB=2,KY=3,FF=4,SY=5,KM=6,MS=7,S2=8,FC=9;
+const P12=[28,27,20,20,19,18,16,10,7,2], W12=[9,8,6,6,5,5,4,2,2,0], D12=[1,3,2,2,4,3,4,4,1,2];
+const GF12=[26,20,15,17,21,11,11,14,8,5], GA12=[10,9,10,13,10,10,12,17,28,29];
+const FIX=[
+ [13,FF,KY],[13,S2,MS],[13,KM,KU],[13,EB,SY],[13,FC,TQ],
+ [14,FF,S2],[14,KU,SY],[14,KY,MS],[14,TQ,EB],[14,KM,FC],
+ [15,SY,FF],[15,MS,KM],[15,S2,FC],[15,KY,TQ],[15,EB,KU],
+ [16,FF,KM],[16,KU,MS],[16,S2,EB],[16,TQ,SY],[16,FC,KY],
+ [17,SY,FC],[17,MS,TQ],[17,KU,FF],[17,S2,KY],[17,EB,KM],
+ [18,MS,SY],[18,KU,FC],[18,TQ,FF],[18,KM,S2],[18,EB,KY]];
+const DATES={13:"9/13",14:"9/27",15:"10/4",16:"10/11",17:"10/18",18:"10/25"};
+/* 公式結果（fixture index → [home, away]） */
+const SCORES={0:[2,1],1:[0,1],2:[4,0],3:[0,0],4:[0,4],   /* 第13節 */
+              5:[2,0],6:[0,2],7:[0,0],8:[3,0],9:[4,1],    /* 第14節 */
+              10:[0,1],11:[2,2],12:[1,1],13:[1,3],14:[3,3]}; /* 第15節 */
+
+const PTS=P12.slice(), GFv=GF12.slice(), GAv=GA12.slice(), PL=new Array(10).fill(12);
+const WN=W12.slice(), DR=D12.slice();
+for(const k in SCORES){ const [,h,a]=FIX[k], [gh,ga]=SCORES[k];
+  PL[h]++; PL[a]++; GFv[h]+=gh; GAv[h]+=ga; GFv[a]+=ga; GAv[a]+=gh;
+  if(gh>ga){PTS[h]+=3;WN[h]++;} else if(ga>gh){PTS[a]+=3;WN[a]++;} else {PTS[h]++;PTS[a]++;DR[h]++;DR[a]++;} }
+const GD=GFv.map((g,t)=>g-GAv[t]);
+
+const LOCKED=new Set(Object.keys(SCORES).map(Number));
+const KMOPEN=[], OTHOPEN=[];
+FIX.forEach((f,i)=>{ if(LOCKED.has(i))return; (f[1]===KM||f[2]===KM?KMOPEN:OTHOPEN).push(i); });
+const KMOPP=KMOPEN.map(i=>{const[r,h,a]=FIX[i];return {opp:h===KM?a:h,home:h===KM,rd:r};});
+const NP=KMOPEN.length, TOTAL=Math.pow(3,NP);
+
+let R=new Array(30).fill(null);
+for(const k of LOCKED){ const [,h,a]=FIX[k],[gh,ga]=SCORES[k]; R[k]= gh>ga?'H':ga>gh?'A':'D'; }
+const R0=R.slice();
+
+function basePoints(){ const p=PTS.slice();
+  R.forEach((r,i)=>{ if(!r||LOCKED.has(i))return; const[,h,a]=FIX[i];
+    if(r==='H')p[h]+=3; else if(r==='A')p[a]+=3; else {p[h]++;p[a]++;} });
+  return p; }
+function playedCount(){ const pl=PL.slice();
+  R.forEach((r,i)=>{ if(!r||LOCKED.has(i))return; const[,h,a]=FIX[i]; pl[h]++; pl[a]++; });
+  return pl; }
+const RIVALS=[0,1,2,3,4,5,7,8,9];
+let SUBSETS=[[]]; RIVALS.forEach(t=>SUBSETS.push([t]));
+for(let i=0;i<RIVALS.length;i++)for(let j=i+1;j<RIVALS.length;j++)SUBSETS.push([RIVALS[i],RIVALS[j]]);
+
+function feasible(base,open,P,allow){
+  const ss=SUBSETS.filter(s=>s.length<=allow)
+    .sort((a,b)=>b.reduce((x,t)=>x+base[t],0)-a.reduce((x,t)=>x+base[t],0));
+  for(const Sset of ss){
+    const inS=new Set(Sset); const slack={}; let bad=false;
+    for(const t of RIVALS){ if(inS.has(t))continue; const v=P-base[t]; if(v<0){bad=true;break;} slack[t]=v; }
+    if(bad)continue;
+    const internal=[];
+    for(const mi of open){ const[,h,a]=FIX[mi]; if(slack[h]!==undefined&&slack[a]!==undefined) internal.push([h,a]); }
+    let tot=0; for(const k in slack) tot+=slack[k];
+    if(tot<2*internal.length) continue;
+    if(assign(internal,slack,0,tot)) return Sset;
+  }
+  return null;
+}
+function assign(m,slack,i,tot){
+  if(i===m.length)return true;
+  if(tot<2*(m.length-i))return false;
+  const[h,a]=m[i]; const opts=[];
+  if(slack[h]>=3)opts.push([[[h,3]],3]);
+  if(slack[a]>=3)opts.push([[[a,3]],3]);
+  if(slack[h]>=1&&slack[a]>=1)opts.push([[[h,1],[a,1]],2]);
+  opts.sort((x,y)=>y[1]-x[1]);
+  for(const [mv,used] of opts){
+    for(const [t,p] of mv) slack[t]-=p;
+    if(assign(m,slack,i+1,tot-used)){ for(const [t,p] of mv) slack[t]+=p; return true; }
+    for(const [t,p] of mv) slack[t]+=p;
+  }
+  return false;
+}
+const PATTERNS=[];
+for(let x=0;x<TOTAL;x++){ const p=[]; let v=x; for(let k=0;k<NP;k++){ p.push(v%3); v=(v-v%3)/3; } PATTERNS.push(p); }
+function kmResultOf(i){ const r=R[i]; if(!r)return null; const[,h]=FIX[i];
+  return r==='D'?1:((r==='H')===(h===KM)?2:0); }
+function evaluate(){
+  const fixedKM=KMOPEN.map(kmResultOf);
+  const openOth=OTHOPEN.filter(i=>!R[i]);
+  const b0=basePoints();
+  const rows=PATTERNS.map(pat=>{
+    for(let k=0;k<NP;k++) if(fixedKM[k]!==null && fixedKM[k]!==pat[k]) return {pat,state:'gone',P:null};
+    const b=b0.slice();
+    for(let k=0;k<NP;k++){ if(fixedKM[k]!==null)continue;
+      const {opp}=KMOPP[k], r=pat[k];
+      if(r===2)b[KM]+=3; else if(r===1){b[KM]++;b[opp]++;} else b[opp]+=3; }
+    const P=b[KM];
+    return {pat,state:feasible(b,openOth,P,2)?'alive':'dead',P};
+  });
+  return {rows,base:b0};
+}
+
+const AVG=GFv.reduce((a,b)=>a+b,0)/PL.reduce((a,b)=>a+b,0), HA=1.12;
+const ATT=GFv.map((g,t)=>g/PL[t]), DEFN=GAv.map((g,t)=>g/PL[t]);
+function pois(l){ const L=Math.exp(-l); let k=0,p=1; do{p*=Math.random();k++;}while(p>L); return k-1; }
+function monteCarlo(n){
+  const bp=PTS.slice(),bgd=GD.slice(),bgf=GFv.slice();
+  R.forEach((r,i)=>{ if(!r||LOCKED.has(i))return; const[,h,a]=FIX[i];
+    if(r==='H'){bp[h]+=3;bgd[h]++;bgd[a]--;bgf[h]++;}
+    else if(r==='A'){bp[a]+=3;bgd[a]++;bgd[h]--;bgf[a]++;}
+    else{bp[h]++;bp[a]++;} });
+  const open=R.map((r,i)=>r?null:i).filter(v=>v!==null);
+  let top3=0;
+  for(let s=0;s<n;s++){
+    const p=bp.slice(),gd=bgd.slice(),gf=bgf.slice();
+    for(const mi of open){ const[,h,a]=FIX[mi];
+      const gh=pois(ATT[h]*DEFN[a]/AVG*HA), ga=pois(ATT[a]*DEFN[h]/AVG/HA);
+      gf[h]+=gh;gf[a]+=ga;gd[h]+=gh-ga;gd[a]+=ga-gh;
+      if(gh>ga)p[h]+=3; else if(ga>gh)p[a]+=3; else {p[h]++;p[a]++;} }
+    const ord=[0,1,2,3,4,5,6,7,8,9].sort((x,y)=>p[y]-p[x]||gd[y]-gd[x]||gf[y]-gf[x]);
+    if(ord.indexOf(KM)<3) top3++;
+  }
+  return top3/n;
+}
+
+const $=id=>document.getElementById(id);
+function buildFixtures(){
+  const box=$('rounds'); box.innerHTML='';
+  for(let rd=13;rd<=18;rd++){
+    const idx=FIX.map((f,i)=>f[0]===rd?i:-1).filter(i=>i>=0);
+    const nLock=idx.filter(i=>LOCKED.has(i)).length;
+    const d=document.createElement('div'); d.className='rd'+(nLock===idx.length?' locked':'');
+    const tag = nLock===idx.length?' <span style="color:var(--goodink);font-size:10px">● 確定</span>'
+              : nLock? ` <span style="color:var(--goodink);font-size:10px">● ${nLock}/${idx.length}確定</span>`:'';
+    d.innerHTML=`<h3><span>第${rd}節${tag}</span><em>${DATES[rd]}（日）</em></h3>`;
+    idx.forEach(i=>{
+      const[,h,a]=FIX[i], isKM=h===KM||a===KM, row=document.createElement('div');
+      row.className='mt'+(isKM?' km':''); row.dataset.i=i;
+      const left=`<div class="tm"><b>${S[h]}</b><span class="vs">vs</span><b>${S[a]}</b></div>`;
+      if(LOCKED.has(i)){ const[gh,ga]=SCORES[i]; row.innerHTML=left+`<div class="score">${gh} - ${ga}</div>`; }
+      else{
+        row.innerHTML=left+`<div class="seg3">
+          <button data-v="H" title="${S[h]}勝ち">勝</button><button data-v="D">分</button>
+          <button data-v="A" title="${S[a]}勝ち">敗</button></div>`;
+        row.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ R[i]=R[i]===b.dataset.v?null:b.dataset.v; refresh(); }; });
+      }
+      d.appendChild(row);
+    });
+    box.appendChild(d);
+  }
+}
+function paintFixtures(){
+  document.querySelectorAll('.mt').forEach(row=>{ const i=+row.dataset.i;
+    row.querySelectorAll('.seg3 button').forEach(b=>b.setAttribute('aria-pressed',String(R[i]===b.dataset.v))); });
+}
+function paintStandings(base){
+  const pl=playedCount(), wn=WN.slice(), dr=DR.slice();
+  R.forEach((r,i)=>{ if(!r||LOCKED.has(i))return; const[,h,a]=FIX[i];
+    if(r==='H')wn[h]++; else if(r==='A')wn[a]++; else {dr[h]++;dr[a]++;} });
+  const maxp=base.map((p,t)=>p+(18-pl[t])*3);
+  const DOM=Math.max(36,Math.max(...maxp));
+  const ord=[...Array(10).keys()].sort((x,y)=>base[y]-base[x]||GD[y]-GD[x]||GFv[y]-GFv[x]);
+  const kmP=base[KM],kmMax=maxp[KM], pc=v=>v/DOM*100;
+  const ticks=[...Array(Math.floor(DOM/6)+1).keys()];
+  $('axl').innerHTML=ticks.map(k=>`<span style="left:${pc(k*6)}%">${k*6}</span>`).join('');
+  const gl=ticks.map(k=>`<div class="glz" style="left:${pc(k*6)}%"></div>`).join('');
+  $('stand').innerHTML=ord.map((t,i)=>{
+    let cur=0,seg='';
+    for(let k=0;k<wn[t];k++){ seg+=`<div class="seg" style="left:calc(${pc(cur)}% + 1px);width:calc(${pc(3)}% - 2px)"></div>`; cur+=3; }
+    for(let k=0;k<dr[t];k++){ seg+=`<div class="seg d" style="left:calc(${pc(cur)}% + 1px);width:calc(${pc(1)}% - 2px)"></div>`; cur+=1; }
+    const rem=maxp[t]-base[t];
+    if(rem>0) seg+=`<div class="pot" style="left:calc(${pc(cur)}% + 1px);width:calc(${pc(rem)}% - 2px)"></div>`;
+    const rel = t===KM?'<b style="color:var(--hi)">最大'+kmMax+'</b>'
+      : base[t]>kmMax?'<span style="color:var(--bad)">確定で上</span>'
+      : maxp[t]<=kmP?'<span style="color:var(--goodink)">確定で下</span>'
+      : (base[t]===kmP?'同勝点':((base[t]>kmP?'+':'')+(base[t]-kmP)+'pt'))+'・競合';
+    return `<div class="stgrid strow ${t===KM?'km':''}">
+      <div class="rk">${i+1}</div><div class="nm">${N[t]}</div>
+      <div class="barwrap">${gl}${seg}</div>
+      <div class="pl">${pl[t]}</div><div class="pt">${base[t]}</div><div class="rel">${rel}</div></div>`;
+  }).join('');
+}
+const LB=['敗','分','勝'],CL=['L','D','W'];
+function paintPatterns(rows){
+  const only=$('onlyalive').checked, byPt={};
+  rows.forEach(r=>{ if(r.state==='gone')return; (byPt[r.P] ||= []).push(r); });
+  const pts=Object.keys(byPt).map(Number).sort((a,b)=>b-a);
+  const head=`<div class="oppcols">${KMOPP.map(o=>`<div>${o.rd}節<br>${o.home?'H':'A'}${S[o.opp].slice(0,4)}</div>`).join('')}</div>`;
+  const g=$('groups'); g.innerHTML=''; let aliveTot=0;
+  pts.forEach(P=>{
+    const list=byPt[P], alive=list.filter(r=>r.state==='alive'); aliveTot+=alive.length;
+    if(only&&!alive.length)return;
+    const show=only?alive:list;
+    const det=document.createElement('details'); det.className='grp';
+    if(alive.length&&alive.length<=12)det.open=true;
+    det.innerHTML=`<summary><span class="p">${P}pt</span>
+      <span class="pill ${alive.length?'ok':'ng'}">${alive.length?'3位の可能性あり':'3位は不可能'}</span>
+      <span class="cnt">${alive.length} / ${list.length} 生存</span></summary>
+      <div class="plist">${head}${show.map(r=>`<div class="prow ${r.state==='alive'?'':'dead'}">${
+        r.pat.map(v=>`<span class="c ${CL[v]}">${LB[v]}</span>`).join('')}<span class="tail">${
+        r.state==='alive'?'○ 3位あり':'× 消滅'}</span></div>`).join('')}</div>`;
+    g.appendChild(det);
+  });
+  if(!g.children.length) g.innerHTML='<p style="color:var(--bad);font-size:13px;margin:0">3位以内に届くパターンは残っていません。</p>';
+  $('pstat').textContent=`生存 ${aliveTot} 通り`;
+}
+function paintReqs(rows,base){
+  const alive=rows.filter(r=>r.state==='alive'), box=$('reqs');
+  if(!alive.length){ box.innerHTML='<p style="margin:0;font-size:12.5px;color:var(--muted)">3位の可能性が消滅したため、条件はありません。</p>'; return; }
+  const P=Math.max(...alive.map(r=>r.P)), pl=playedCount();
+  const items=RIVALS.map(t=>{ const rem=(18-pl[t])*3, mx=base[t]+rem; return {t,mx,drop:mx-P,rem}; }).sort((a,b)=>a.drop-b.drop);
+  box.innerHTML=`<div class="req" style="grid-column:1/-1;background:transparent;border-style:dashed">
+      <b>前提：鎌倉が残り全勝で <span style="color:var(--hi)">${P}pt</span> に到達したケース</b>
+      <span class="n">この勝点より上に行けるのは<b>2クラブまで</b>。「落とす必要」が小さいクラブほど、鎌倉を上回りやすい＝直接の脅威。</span></div>`+
+    items.map(o=>{ const free=o.drop<=0, danger=o.drop>0&&o.drop<=6;
+      return `<div class="req ${free?'free':danger?'danger':''}"><b>${N[o.t]}</b>
+        <span class="n">現在${base[o.t]}pt・最大${o.mx}pt<br>${o.drop===0?'最大でも同勝点まで（得失点差勝負）'
+        :free?'鎌倉の勝点に届かない（脅威なし）'
+        :`${P}pt以下に抑えるには残り${o.rem}pt中<b style="color:var(--bad)"> ${o.drop}pt以上</b>を落とす必要`}</span></div>`;
+    }).join('');
+}
+let timer=null;
+function refresh(){
+  paintFixtures(); document.body.classList.add('busy'); clearTimeout(timer);
+  timer=setTimeout(()=>{
+    const {rows,base}=evaluate();
+    const alive=rows.filter(r=>r.state==='alive').length, live=rows.filter(r=>r.state!=='gone').length;
+    $('v1').className='vt '+(alive?'alive':'dead');
+    $('v1big').textContent=alive?'あり':'消滅';
+    $('v1note').textContent=alive?(live<TOTAL?`残り${live}通りの展開のうち${alive}通りで到達可能`:'数学的にまだ到達可能'):'どの結果でも3位以内には届きません';
+    $('v2big').innerHTML=`${alive}<small>/${live}</small>`;
+    $('v2bar').style.width=(live?alive/live*100:0)+'%';
+    $('v2note').textContent=live===TOTAL?`残り${NP}試合の勝敗パターン`:`確定分を除いた残り${live}通り中`;
+    const ap=rows.filter(r=>r.state==='alive').map(r=>r.P);
+    if(ap.length){
+      $('v4big').innerHTML=`${Math.min(...ap)}<small>pt〜</small>`;
+      const live2=rows.filter(r=>r.state!=='gone');
+      const safe=[...new Set(live2.map(r=>r.P))].sort((a,b)=>a-b).find(p=>live2.filter(r=>r.P===p).every(r=>r.state==='alive'));
+      $('v4note').textContent=safe!=null?`${safe}pt以上なら必ず可能性が残る`:'同勝点でも組み合わせ次第';
+    } else { $('v4big').innerHTML='—'; $('v4note').textContent='到達不能'; }
+    paintStandings(base); paintPatterns(rows); paintReqs(rows,base);
+    const p3=monteCarlo(20000);
+    $('v3big').innerHTML=(p3*100<0.05&&p3>0?'<0.1':(p3*100).toFixed(p3*100<10?1:0))+'<small>%</small>';
+    document.body.classList.remove('busy');
+  },20);
+}
+$('onlyalive').onchange=refresh;
+$('reset').onclick=()=>{ R=R0.slice(); refresh(); };
+$('theme').onclick=e=>{ const d=document.documentElement.dataset.theme==='dark';
+  document.documentElement.dataset.theme=d?'light':'dark'; e.target.textContent=d?'ダーク':'ライト'; };
+buildFixtures(); refresh();
+</script>
+</body>
+</html>
