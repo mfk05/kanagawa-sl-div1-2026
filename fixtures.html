@@ -26,7 +26,7 @@
     --shadow:none;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--page);color:var(--ink);padding:22px 16px 60px;
+  body{margin:0;background:var(--page);color:var(--ink);padding:0 16px 60px;
     font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;font-size:15px;line-height:1.55}
   .wrap{max-width:1060px;margin:0 auto}
   header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:18px}
@@ -90,27 +90,33 @@
   .key b{color:var(--hi)}
 
   /* ===== 共通タブバー ===== */
-  .topbar{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--page) 88%,transparent);
-    backdrop-filter:saturate(180%) blur(10px);-webkit-backdrop-filter:saturate(180%) blur(10px);
-    border-bottom:1px solid var(--border);margin:-24px -16px 18px;padding:0 16px}
-  .tbin{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:14px;min-height:50px;flex-wrap:nowrap}
-  .brand{font-size:12.5px;font-weight:600;color:var(--ink2);text-decoration:none;white-space:nowrap;flex:none}
-  .brand b{color:var(--ink)}
-  .brand:hover{color:var(--ink)}
-  .tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+  .topbar{position:-webkit-sticky;position:sticky;top:0;z-index:100;
+    background:var(--surface);border-bottom:1px solid var(--border);
+    box-shadow:0 1px 10px rgba(11,11,11,.06);margin:0 -16px 18px;padding:0 16px}
+  :root[data-theme="dark"] .topbar{box-shadow:0 1px 10px rgba(0,0,0,.5)}
+  .tbin{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:12px;min-height:52px}
+  .brand{font-size:12.5px;font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap;flex:none;
+    display:flex;align-items:center;gap:7px}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--hi);flex:none}
+  .brand span{color:var(--muted);font-weight:500}
+  .tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding:7px 0}
   .tabs::-webkit-scrollbar{display:none}
-  .tab{position:relative;display:block;padding:14px 11px 12px;font-size:12.5px;color:var(--ink2);
-    text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s}
-  .tab:hover{color:var(--ink)}
-  .tab[aria-current="page"]{color:var(--hi);font-weight:700;border-bottom-color:var(--hi)}
+  .tab{display:block;padding:7px 13px;font-size:12.5px;font-weight:600;color:var(--ink2);text-decoration:none;
+    white-space:nowrap;border-radius:8px;border:1px solid transparent;transition:background .15s,color .15s,border-color .15s}
+  .tab:hover{background:var(--surface2);color:var(--ink);border-color:var(--border)}
+  .tab[aria-current="page"]{background:var(--hi);color:#fff;border-color:var(--hi)}
+  .tab[aria-current="page"]:hover{background:var(--hi);color:#fff}
   .topbar .btn{flex:none;border:1px solid var(--border);background:var(--surface);color:var(--ink2);
     border-radius:999px;padding:6px 13px;font-size:12.5px;cursor:pointer;font-family:inherit}
   .topbar .btn:hover{border-color:var(--axis);color:var(--ink)}
-  @media(max-width:720px){ .brand{display:none} }
+  @media(max-width:760px){.brand span{display:none}}
+  @media(max-width:560px){.brand{display:none}.tab{padding:7px 10px;font-size:12px}}
+  @media(max-width:560px){.tabs{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+    .topbar .btn{padding:6px 9px;font-size:11.5px}}
 </style>
 </head>
 <body>
-<nav class="topbar"><div class="tbin"><a class="brand" href="index.html">神奈川県1部 2026 <b>データボード</b></a><div class="tabs"><a class="tab" href="index.html">概要</a><a class="tab" href="trend.html">勝ち点推移・星取表</a><a class="tab" href="simulator.html">3位シミュレーター</a><a class="tab" href="fixtures.html" aria-current="page">残り日程難易度</a></div><button class="btn" id="theme">ダーク</button></div></nav>
+<nav class="topbar"><div class="tbin"><a class="brand" href="index.html"><i class="dot"></i>神奈川県1部 2026 <span>データボード</span></a><div class="tabs"><a class="tab" href="index.html">概要</a><a class="tab" href="trend.html">勝ち点推移・星取表</a><a class="tab" href="simulator.html">3位シミュレーター</a><a class="tab" href="fixtures.html" aria-current="page">残り日程難易度</a></div><button class="btn" id="theme">ダーク</button></div></nav>
 <div class="wrap">
 
 <header>
