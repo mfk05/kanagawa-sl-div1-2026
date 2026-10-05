@@ -6,68 +6,42 @@
 <script>try{var _t=localStorage.getItem("kslTheme");if(_t)document.documentElement.dataset.theme=_t;}catch(e){}</script>
 
 <title>残り日程難易度マップ｜神奈川県1部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap">
+<link rel="stylesheet" href="dads.css">
 <style>
-  :root{
-    color-scheme:light;
-    --page:#f9f9f7;--surface:#fcfcfb;--surface2:#f4f3ef;
-    --ink:#0b0b0b;--ink2:#52514e;--muted:#898781;
-    --grid:#e1e0d9;--axis:#c3c2b7;--border:rgba(11,11,11,.10);
-    --hi:#2a78d6;--good:#0ca30c;--goodink:#006300;--bad:#d03b3b;
-    --easy:#0ca30c;--hard:#d03b3b;--mid:#c3c2b7;
-    --shadow:0 1px 2px rgba(11,11,11,.05);
-  }
-  :root[data-theme="dark"]{
-    color-scheme:dark;
-    --page:#0d0d0d;--surface:#1a1a19;--surface2:#232321;
-    --ink:#fff;--ink2:#c3c2b7;--muted:#898781;
-    --grid:#2c2c2a;--axis:#383835;--border:rgba(255,255,255,.10);
-    --hi:#3987e5;--good:#0ca30c;--goodink:#0ca30c;--bad:#e66767;
-    --easy:#0ca30c;--hard:#e66767;--mid:#56554f;
-    --shadow:none;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--page);color:var(--ink);padding:0 16px 60px;
-    font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;font-size:15px;line-height:1.55}
-  .wrap{max-width:1060px;margin:0 auto}
-  header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:18px}
-  h1{font-size:19px;margin:0 0 3px;letter-spacing:-.01em}
-  .sub{font-size:12.5px;color:var(--muted);margin:0}
-  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink2);border-radius:999px;
-    padding:6px 13px;font-size:12.5px;cursor:pointer;font-family:inherit}
-  h2{font-size:14px;margin:0 0 4px}
-  .lead{font-size:12.5px;color:var(--muted);margin:0 0 12px}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
 
   /* ランキング */
-  .rankrow{display:grid;grid-template-columns:165px 1fr 96px;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--grid)}
+  .rankrow{display:grid;grid-template-columns:230px 1fr 104px;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--grid)}
   .rankrow:last-child{border-bottom:none}
-  .rname{font-size:13px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .rname i{font-style:normal;font-weight:400;color:var(--muted);font-size:11.5px;margin-left:5px}
+  .rname{font-size:0.875rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rname i{font-style:normal;font-weight:400;color:var(--muted);font-size:0.875rem;margin-left:5px}
   .rbar{position:relative;height:18px;background:var(--grid);border-radius:4px;overflow:hidden}
   .rbar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--mid)}
-  .rbar b{position:absolute;right:6px;top:0;line-height:18px;font-size:11px;font-weight:650;color:var(--ink)}
-  .rland{font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2)}
-  .rland b{font-size:15px;color:var(--ink)}
+  .rbar b{position:absolute;right:6px;top:0;line-height:18px;font-size:0.875rem;font-weight:700;color:var(--ink)}
+  .rland{font-size:0.875rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2)}
+  .rland b{font-size:0.875rem;color:var(--ink)}
   .km .rname,.km .rland b{color:var(--hi)}
 
   /* チームブロック */
   .team{border:1px solid var(--grid);border-radius:12px;padding:12px 13px;margin-bottom:10px;background:var(--surface2)}
   .team.km{border-color:color-mix(in srgb,var(--hi) 45%,transparent);background:color-mix(in srgb,var(--hi) 5%,var(--surface))}
   .thead{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:9px}
-  .thead .nm{font-size:14px;font-weight:700}
+  .thead .nm{font-size:0.875rem;font-weight:700}
   .team.km .thead .nm{color:var(--hi)}
-  .thead .pt{font-size:12.5px;color:var(--ink2);font-variant-numeric:tabular-nums}
-  .thead .tag{font-size:10.5px;padding:1px 8px;border-radius:999px;border:1px solid var(--border);color:var(--ink2)}
-  .thead .sp{margin-left:auto;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .thead .pt{font-size:0.875rem;color:var(--ink2);font-variant-numeric:tabular-nums}
+  .thead .tag{font-size:0.875rem;padding:1px 8px;border-radius:999px;border:1px solid var(--border);color:var(--ink2)}
+  .thead .sp{margin-left:auto;font-size:0.875rem;color:var(--muted);font-variant-numeric:tabular-nums}
   .fixtures{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
   @media(max-width:700px){.fixtures{grid-template-columns:repeat(2,1fr)}}
   .fx{border:1px solid var(--border);border-radius:9px;padding:7px 8px;background:var(--surface);position:relative;overflow:hidden}
-  .fx .rd{font-size:10px;color:var(--muted);display:flex;justify-content:space-between}
+  .fx .rd{font-size:0.875rem;color:var(--muted);display:flex;justify-content:space-between}
   .fx .rd .ha{font-weight:700;letter-spacing:.02em}
-  .fx .op{font-size:12.5px;font-weight:650;margin:1px 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .fx .xp{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1}
-  .fx .xp small{font-size:9.5px;font-weight:500;color:var(--muted);margin-left:2px}
-  .fx .lg{font-size:10.5px;color:var(--ink2);margin-top:3px;font-variant-numeric:tabular-nums}
+  .fx .op{font-size:0.875rem;font-weight:700;margin:1px 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fx .xp{font-size:1rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1}
+  .fx .xp small{font-size:0.875rem;font-weight:400;color:var(--muted);margin-left:2px}
+  .fx .lg{font-size:0.875rem;color:var(--ink2);margin-top:3px;font-variant-numeric:tabular-nums}
   .fx .lg .o{color:var(--goodink);font-weight:700}
   .fx .lg .x{color:var(--bad);font-weight:700}
   .fx .lg .e{color:var(--muted);font-weight:700}
@@ -75,44 +49,15 @@
   .fx .gauge{height:4px;border-radius:2px;background:var(--grid);margin-top:5px;overflow:hidden}
   .fx .gauge i{display:block;height:100%;border-radius:2px}
 
-  .legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11.5px;color:var(--ink2);margin-top:10px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:0.875rem;color:var(--ink2);margin-top:10px}
   .ramp{display:flex;height:10px;width:150px;border-radius:3px;overflow:hidden}
   .ramp span{flex:1}
 
-  table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
-  th,td{padding:6px 8px;border-bottom:1px solid var(--grid);text-align:right;white-space:nowrap}
   th:first-child,td:first-child{text-align:left}
-  th{font-size:10.5px;color:var(--muted);font-weight:600}
-  tr.km td{color:var(--hi);font-weight:650}
-  footer{font-size:11.5px;color:var(--muted);line-height:1.7;margin-top:10px}
-  a{color:var(--hi)}
-  .key{background:var(--surface2);border-left:3px solid var(--hi);border-radius:0 8px 8px 0;padding:9px 12px;font-size:12.5px;margin-top:12px}
+  tr.km td{color:var(--hi);font-weight:700}
+  .key{background:var(--surface2);border-left:3px solid var(--hi);border-radius:0 8px 8px 0;padding:9px 12px;font-size:0.875rem;margin-top:12px}
   .key b{color:var(--hi)}
 
-  /* ===== 共通タブバー ===== */
-  .topbar{position:-webkit-sticky;position:sticky;top:0;z-index:100;
-    background:var(--surface);border-bottom:1px solid var(--border);
-    box-shadow:0 1px 10px rgba(11,11,11,.06);margin:0 -16px 18px;padding:0 16px}
-  :root[data-theme="dark"] .topbar{box-shadow:0 1px 10px rgba(0,0,0,.5)}
-  .tbin{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:12px;min-height:52px}
-  .brand{font-size:12.5px;font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap;flex:none;
-    display:flex;align-items:center;gap:7px}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--hi);flex:none}
-  .brand span{color:var(--muted);font-weight:500}
-  .tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding:7px 0}
-  .tabs::-webkit-scrollbar{display:none}
-  .tab{display:block;padding:7px 13px;font-size:12.5px;font-weight:600;color:var(--ink2);text-decoration:none;
-    white-space:nowrap;border-radius:8px;border:1px solid transparent;transition:background .15s,color .15s,border-color .15s}
-  .tab:hover{background:var(--surface2);color:var(--ink);border-color:var(--border)}
-  .tab[aria-current="page"]{background:var(--hi);color:#fff;border-color:var(--hi)}
-  .tab[aria-current="page"]:hover{background:var(--hi);color:#fff}
-  .topbar .btn{flex:none;border:1px solid var(--border);background:var(--surface);color:var(--ink2);
-    border-radius:999px;padding:6px 13px;font-size:12.5px;cursor:pointer;font-family:inherit}
-  .topbar .btn:hover{border-color:var(--axis);color:var(--ink)}
-  @media(max-width:760px){.brand span{display:none}}
-  @media(max-width:560px){.brand{display:none}.tab{padding:7px 10px;font-size:12px}}
-  @media(max-width:560px){.tabs{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
-    .topbar .btn{padding:6px 9px;font-size:11.5px}}
 </style>
 </head>
 <body>
@@ -139,7 +84,7 @@
   <div id="teams"></div>
   <div class="legend">
     <span>難易度</span>
-    <span class="ramp"><span style="background:#d03b3b"></span><span style="background:#e08b6a"></span><span style="background:#c3c2b7"></span><span style="background:#7cbf6a"></span><span style="background:#0ca30c"></span></span>
+    <span class="ramp"><span style="background:#ce0000"></span><span style="background:#e25100"></span><span style="background:#767676"></span><span style="background:#259d63"></span><span style="background:#197a4b"></span></span>
     <span>← 取りにくい ／ 取りやすい →</span>
     <span style="margin-left:6px">前回対戦：<b class="o" style="color:var(--goodink)">○</b>勝ち <b style="color:var(--muted)">△</b>分け <b style="color:var(--bad)">●</b>負け</span>
   </div>
@@ -176,7 +121,7 @@ const D=[
 ];
 /* 難易度→色（1.5を中立とする発散スケール） */
 function heat(x){
-  const c=[[0.6,"#d03b3b"],[1.1,"#dd7d5e"],[1.5,"#b9b7ad"],[2.1,"#6cb356"],[2.8,"#0ca30c"]];
+  const c=[[0.6,"#ce0000"],[1.1,"#e25100"],[1.5,"#767676"],[2.1,"#259d63"],[2.8,"#197a4b"]];
   if(x<=c[0][0])return c[0][1];
   for(let i=0;i<c.length-1;i++){ if(x<=c[i+1][0]){
     const t=(x-c[i][0])/(c[i+1][0]-c[i][0]);
