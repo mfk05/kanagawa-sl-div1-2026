@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var _t=localStorage.getItem("kslTheme");if(_t)document.documentElement.dataset.theme=_t;}catch(e){}</script>
+
 <title>残り日程難易度マップ｜神奈川県1部</title>
 <style>
   :root{
@@ -86,9 +88,29 @@
   a{color:var(--hi)}
   .key{background:var(--surface2);border-left:3px solid var(--hi);border-radius:0 8px 8px 0;padding:9px 12px;font-size:12.5px;margin-top:12px}
   .key b{color:var(--hi)}
+
+  /* ===== 共通タブバー ===== */
+  .topbar{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--page) 88%,transparent);
+    backdrop-filter:saturate(180%) blur(10px);-webkit-backdrop-filter:saturate(180%) blur(10px);
+    border-bottom:1px solid var(--border);margin:-24px -16px 18px;padding:0 16px}
+  .tbin{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:14px;min-height:50px;flex-wrap:nowrap}
+  .brand{font-size:12.5px;font-weight:600;color:var(--ink2);text-decoration:none;white-space:nowrap;flex:none}
+  .brand b{color:var(--ink)}
+  .brand:hover{color:var(--ink)}
+  .tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{position:relative;display:block;padding:14px 11px 12px;font-size:12.5px;color:var(--ink2);
+    text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s}
+  .tab:hover{color:var(--ink)}
+  .tab[aria-current="page"]{color:var(--hi);font-weight:700;border-bottom-color:var(--hi)}
+  .topbar .btn{flex:none;border:1px solid var(--border);background:var(--surface);color:var(--ink2);
+    border-radius:999px;padding:6px 13px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .topbar .btn:hover{border-color:var(--axis);color:var(--ink)}
+  @media(max-width:720px){ .brand{display:none} }
 </style>
 </head>
 <body>
+<nav class="topbar"><div class="tbin"><a class="brand" href="index.html">神奈川県1部 2026 <b>データボード</b></a><div class="tabs"><a class="tab" href="index.html">概要</a><a class="tab" href="trend.html">勝ち点推移・星取表</a><a class="tab" href="simulator.html">3位シミュレーター</a><a class="tab" href="fixtures.html" aria-current="page">残り日程難易度</a></div><button class="btn" id="theme">ダーク</button></div></nav>
 <div class="wrap">
 
 <header>
@@ -96,12 +118,11 @@
     <h1>残り日程の難易度マップ ─ 3〜7位の最終3節</h1>
     <p class="sub">2026 神奈川県社会人サッカーリーグ1部 ／ 第15節終了時点 ／ 全75試合の実績から算出</p>
   </div>
-  <button class="btn" id="theme">ダーク</button>
 </header>
 
 <div class="card">
   <h2>残り3試合で積める勝ち点の見込み</h2>
-  <p class="lead">各クラブの得点力・失点・ホームアドバンテージを14節ぶんの実績から推定し、残り3試合をシミュレーションした期待獲得勝ち点（最大9pt）</p>
+  <p class="lead">各クラブの得点力・失点・ホームアドバンテージを15節ぶんの実績から推定し、残り3試合をシミュレーションした期待獲得勝ち点（最大9pt）</p>
   <div id="ranking"></div>
   <div class="key" id="keynote"></div>
 </div>
@@ -120,7 +141,7 @@
 
 <div class="card">
   <h2>ホーム／アウェイの地力</h2>
-  <p class="lead">14節までの1試合平均勝ち点。残り日程がホーム寄りかアウェイ寄りかと合わせて見る欄です。</p>
+  <p class="lead">15節までの1試合平均勝ち点。残り日程がホーム寄りかアウェイ寄りかと合わせて見る欄です。</p>
   <table>
     <thead><tr><th>クラブ</th><th>現在</th><th>ホーム</th><th>H平均</th><th>アウェイ</th><th>A平均</th><th>残りH/A</th><th>相手平均PPG</th><th>前回対戦の獲得</th></tr></thead>
     <tbody id="ha"></tbody>
@@ -128,7 +149,7 @@
 </div>
 
 <footer>
-  ・期待勝ち点は各クラブの得点/失点（14節までの実績）からポアソン分布で試合結果を生成する簡易モデルによるもので、公式なものではありません。<br>
+  ・期待勝ち点は各クラブの得点/失点（15節までの実績）からポアソン分布で試合結果を生成する簡易モデルによるもので、公式なものではありません。<br>
   ・相手平均PPG＝その対戦相手が「当該クラブ以外」と戦ったときの1試合平均勝ち点。自チームとの対戦結果を除いて算出しています。<br>
   ・出典：<a href="https://fakj-shakaijin.com/league/div1/">神奈川県サッカー協会 社会人部会 日程・結果</a>（第1〜15節 全75試合）
 </footer>
@@ -201,6 +222,12 @@ document.getElementById('ha').innerHTML=[...D].sort((a,b)=>b.pt-a.pt||b.exp-a.ex
 
 document.getElementById('theme').onclick=e=>{const dk=document.documentElement.dataset.theme==='dark';
   document.documentElement.dataset.theme=dk?'light':'dark'; e.target.textContent=dk?'ダーク':'ライト';};
+</script>
+<script>
+(function(){var b=document.getElementById('theme');if(!b)return;
+ b.textContent=document.documentElement.dataset.theme==='dark'?'ライト':'ダーク';
+ b.addEventListener('click',function(){try{localStorage.setItem('kslTheme',document.documentElement.dataset.theme||'light')}catch(e){}});
+})();
 </script>
 </body>
 </html>
