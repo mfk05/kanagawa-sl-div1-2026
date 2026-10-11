@@ -66,14 +66,14 @@
 
 <header>
   <div>
-    <h1>残り日程の難易度マップ ─ 3〜7位の最終3節</h1>
-    <p class="sub">2026 神奈川県社会人サッカーリーグ1部 ／ 第15節終了時点 ／ 全75試合の実績から算出</p>
+    <h1>残り日程の難易度マップ ─ 3〜7位の最終2節</h1>
+    <p class="sub">2026 神奈川県社会人サッカーリーグ1部 ／ 第16節終了時点 ／ 全80試合の実績から算出</p>
   </div>
 </header>
 
 <div class="card">
-  <h2>残り3試合で積める勝ち点の見込み</h2>
-  <p class="lead">各クラブの得点力・失点・ホームアドバンテージを15節ぶんの実績から推定し、残り3試合をシミュレーションした期待獲得勝ち点（最大9pt）</p>
+  <h2>残り2試合で積める勝ち点の見込み</h2>
+  <p class="lead">各クラブの得点力・失点・ホームアドバンテージを16節ぶんの実績から推定し、残り2試合をシミュレーションした期待獲得勝ち点（最大6pt）</p>
   <div id="ranking"></div>
   <div class="key" id="keynote"></div>
 </div>
@@ -92,7 +92,7 @@
 
 <div class="card">
   <h2>ホーム／アウェイの地力</h2>
-  <p class="lead">15節までの1試合平均勝ち点。残り日程がホーム寄りかアウェイ寄りかと合わせて見る欄です。</p>
+  <p class="lead">16節までの1試合平均勝ち点。残り日程がホーム寄りかアウェイ寄りかと合わせて見る欄です。</p>
   <table>
     <thead><tr><th>クラブ</th><th>現在</th><th>ホーム</th><th>H平均</th><th>アウェイ</th><th>A平均</th><th>残りH/A</th><th>相手平均PPG</th><th>前回対戦の獲得</th></tr></thead>
     <tbody id="ha"></tbody>
@@ -100,24 +100,24 @@
 </div>
 
 <footer>
-  ・期待勝ち点は各クラブの得点/失点（15節までの実績）からポアソン分布で試合結果を生成する簡易モデルによるもので、公式なものではありません。<br>
+  ・期待勝ち点は各クラブの得点/失点（16節までの実績）からポアソン分布で試合結果を生成する簡易モデルによるもので、公式なものではありません。<br>
   ・相手平均PPG＝その対戦相手が「当該クラブ以外」と戦ったときの1試合平均勝ち点。自チームとの対戦結果を除いて算出しています。<br>
-  ・出典：<a href="https://fakj-shakaijin.com/league/div1/">神奈川県サッカー協会 社会人部会 日程・結果</a>（第1〜15節 全75試合）
+  ・出典：<a href="https://fakj-shakaijin.com/league/div1/">神奈川県サッカー協会 社会人部会 日程・結果</a>（第1〜16節 全80試合）
 </footer>
 </div>
 
 <script>
 const D=[
- {t:"神奈川県教員SC",pt:21,exp:5.85,land:26.8,oppppg:0.78,leg:9,homeRec:[17,9],awayRec:[4,6],rh:0,
-  fx:[{rd:16,ha:"A",op:"FCSC",xp:2.49,lg:"○ 3-0"},{rd:17,ha:"A",op:"品川CCセカンド",xp:2.24,lg:"○ 2-1"},{rd:18,ha:"A",op:"エブリサ藤沢ユナイテッド",xp:1.12,lg:"○ 2-1"}]},
- {t:"エブリサ藤沢ユナイテッド",pt:22,exp:5.18,land:27.2,oppppg:1.07,leg:1,homeRec:[11,7],awayRec:[11,8],rh:2,
-  fx:[{rd:16,ha:"A",op:"品川CCセカンド",xp:2.24,lg:"● 1-2"},{rd:17,ha:"H",op:"鎌倉インターナショナルFC",xp:1.34,lg:"△ 0-0"},{rd:18,ha:"H",op:"神奈川県教員SC",xp:1.60,lg:"● 1-2"}]},
- {t:"鎌倉インターナショナルFC",km:1,pt:23,exp:4.79,land:27.8,oppppg:1.36,leg:7,homeRec:[15,8],awayRec:[8,7],rh:1,
-  fx:[{rd:16,ha:"A",op:"FIFTY CLUB",xp:0.79,lg:"○ 1-0"},{rd:17,ha:"A",op:"エブリサ藤沢ユナイテッド",xp:1.34,lg:"△ 0-0"},{rd:18,ha:"H",op:"品川CCセカンド",xp:2.66,lg:"○ 2-0"}]},
- {t:"品川CC横浜",pt:22,exp:4.55,land:26.5,oppppg:1.21,leg:6,homeRec:[11,8],awayRec:[11,7],rh:1,
-  fx:[{rd:16,ha:"A",op:"東急SレイエスFC",xp:0.64,lg:"● 0-1"},{rd:17,ha:"H",op:"FCSC",xp:2.55,lg:"○ 2-1"},{rd:18,ha:"A",op:"横浜猛蹴FC",xp:1.36,lg:"○ 2-1"}]},
- {t:"FIFTY CLUB",pt:28,exp:4.53,land:32.5,oppppg:1.95,leg:3,homeRec:[17,8],awayRec:[11,7],rh:1,
-  fx:[{rd:16,ha:"H",op:"鎌倉インターナショナルFC",xp:1.96,lg:"● 0-1"},{rd:17,ha:"A",op:"神奈川大学SC",xp:1.58,lg:"○ 1-0"},{rd:18,ha:"A",op:"東急SレイエスFC",xp:0.99,lg:"● 1-2"}]}
+ {t:"鎌倉インターナショナルFC",km:1,pt:26,exp:4.04,land:30.0,oppppg:1.07,leg:4,homeRec:[15,8],awayRec:[11,8],rh:1,
+  fx:[{rd:17,ha:"A",op:"エブリサ藤沢ユナイテッド",xp:1.36,lg:"△ 0-0"},{rd:18,ha:"H",op:"品川CCセカンド",xp:2.68,lg:"○ 2-0"}]},
+ {t:"品川CC横浜",pt:23,exp:3.86,land:26.9,oppppg:0.63,leg:6,homeRec:[11,8],awayRec:[12,8],rh:1,
+  fx:[{rd:17,ha:"H",op:"FCSC",xp:2.51,lg:"○ 2-1"},{rd:18,ha:"A",op:"横浜猛蹴FC",xp:1.35,lg:"○ 2-1"}]},
+ {t:"神奈川県教員SC",pt:24,exp:3.40,land:27.4,oppppg:1.10,leg:6,homeRec:[17,9],awayRec:[7,7],rh:0,
+  fx:[{rd:17,ha:"A",op:"品川CCセカンド",xp:2.29,lg:"○ 2-1"},{rd:18,ha:"A",op:"エブリサ藤沢ユナイテッド",xp:1.11,lg:"○ 2-1"}]},
+ {t:"エブリサ藤沢ユナイテッド",pt:25,exp:2.97,land:27.9,oppppg:1.53,leg:1,homeRec:[11,7],awayRec:[14,9],rh:2,
+  fx:[{rd:17,ha:"H",op:"鎌倉インターナショナルFC",xp:1.35,lg:"△ 0-0"},{rd:18,ha:"H",op:"神奈川県教員SC",xp:1.62,lg:"● 1-2"}]},
+ {t:"FIFTY CLUB",pt:28,exp:2.30,land:30.3,oppppg:2.13,leg:3,homeRec:[17,9],awayRec:[11,7],rh:0,
+  fx:[{rd:17,ha:"A",op:"神奈川大学SC",xp:1.42,lg:"○ 1-0"},{rd:18,ha:"A",op:"東急SレイエスFC",xp:0.88,lg:"● 1-2"}]}
 ];
 /* 難易度→色（1.5を中立とする発散スケール） */
 function heat(x){
@@ -136,18 +136,18 @@ const sorted=[...D].sort((a,b)=>b.exp-a.exp);
 document.getElementById('ranking').innerHTML=sorted.map(d=>`
   <div class="rankrow ${d.km?'km':''}">
     <div class="rname">${d.t}<i>${d.pt}pt</i></div>
-    <div class="rbar"><i style="width:${d.exp/9*100}%;background:${heat(d.exp/3)}"></i><b>+${d.exp.toFixed(2)}pt</b></div>
+    <div class="rbar"><i style="width:${d.exp/6*100}%;background:${heat(d.exp/2)}"></i><b>+${d.exp.toFixed(2)}pt</b></div>
     <div class="rland">着地 <b>${d.land.toFixed(1)}</b></div>
   </div>`).join('');
 
 document.getElementById('keynote').innerHTML=
- "最も楽なのは <b>神奈川県教員（+5.85）</b>、最も過酷なのは <b>FIFTY（+4.53）</b>。鎌倉は<b>+4.79</b>で下から2番目だが、これは第16節のFIFTY戦（xPts 0.79）が極端に重いため。着地見込みは FIFTY 32.5 が抜け出し、<b>鎌倉 27.8 ／ エブリサ 27.2 ／ 県教員 26.8 ／ 品川横浜 26.5</b> が続く。県教員は残り3試合すべてアウェイだが相手が最下位FCSC・9位品川2nd・エブリサで、<b>直接対決を持たない鎌倉にとって一番の伏兵</b>。";
+ "立場が逆転した。最も楽なのは <b>鎌倉（+4.04）</b>、最も過酷なのは <b>FIFTY（+2.30）</b>。FIFTYは残り2試合が<b>神奈川大（A）→ 東急S（A）</b>と首位・2位への連続アウェイで、相手平均PPGは2.13。着地見込みは <b>FIFTY 30.3 ／ 鎌倉 30.0</b> とほぼ並び、2pt差は日程の重さで相殺される計算。鎌倉は第17節のエブリサ戦（A・xPts 1.36）が唯一の関門で、最終節は品川CCセカンド戦（H・xPts 2.68）が待つ。";
 
 document.getElementById('teams').innerHTML=sorted.map(d=>`
   <div class="team ${d.km?'km':''}">
     <div class="thead">
       <span class="nm">${d.t}</span><span class="pt">${d.pt}pt</span>
-      <span class="tag">残り ホーム${d.rh} / アウェイ${3-d.rh}</span>
+      <span class="tag">残り ホーム${d.rh} / アウェイ${2-d.rh}</span>
       <span class="tag">相手平均PPG ${d.oppppg.toFixed(2)}</span>
       <span class="sp">期待 +${d.exp.toFixed(2)}pt</span>
     </div>
@@ -168,7 +168,7 @@ document.getElementById('ha').innerHTML=[...D].sort((a,b)=>b.pt-a.pt||b.exp-a.ex
   return `<tr class="${d.km?'km':''}"><td>${d.t}</td><td>${d.pt}pt</td>
     <td>${d.homeRec[0]}/${d.homeRec[1]*3}</td><td>${hp.toFixed(2)}</td>
     <td>${d.awayRec[0]}/${d.awayRec[1]*3}</td><td>${apg.toFixed(2)}</td>
-    <td>${d.rh} / ${3-d.rh}</td><td>${d.oppppg.toFixed(2)}</td><td>${d.leg}/9pt</td></tr>`;
+    <td>${d.rh} / ${2-d.rh}</td><td>${d.oppppg.toFixed(2)}</td><td>${d.leg}/6pt</td></tr>`;
 }).join('');
 
 document.getElementById('theme').onclick=e=>{const dk=document.documentElement.dataset.theme==='dark';

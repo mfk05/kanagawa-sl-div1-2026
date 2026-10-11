@@ -99,7 +99,7 @@
 <header>
   <div>
     <h1>鎌倉インターナショナルFC ─ 3位入りシミュレーター</h1>
-    <p class="sub">2026 神奈川県社会人サッカーリーグ1部 ／ <b>第15節終了時点</b>（10/4 横浜猛蹴と2-2）／ 全チーム15試合消化・鎌倉は残り3試合 ／ 順位決定：勝点 → 得失点差 → 総得点 → 直接対決</p>
+    <p class="sub">2026 神奈川県社会人サッカーリーグ1部 ／ <b>第16節終了時点</b>（10/11 アウェイでFIFTYに3-1）／ 全チーム16試合消化・鎌倉は残り2試合 ／ 順位決定：勝点 → 得失点差 → 総得点 → 直接対決</p>
   </div>
   <div style="display:flex;gap:8px">
     <button class="btn" id="reset">予想をリセット</button>
@@ -114,9 +114,9 @@
   </div>
   <div class="vt">
     <div class="lab">生き残っている鎌倉の道筋</div>
-    <div class="big" id="v2big">8<small>/27</small></div>
-    <div class="note" id="v2note">残り3試合の勝敗パターン</div>
-    <div class="meter"><i id="v2bar" style="width:30%"></i></div>
+    <div class="big" id="v2big">6<small>/9</small></div>
+    <div class="note" id="v2note">残り2試合の勝敗パターン</div>
+    <div class="meter"><i id="v2bar" style="width:67%"></i></div>
   </div>
   <div class="vt">
     <div class="lab">3位以内 確率（実力モデル）</div>
@@ -142,7 +142,7 @@
 </div>
 
 <div class="card">
-  <h2>③ 鎌倉の残り3試合 ─ 全27パターン <span>「3位以内が数学的に残るか」で判定</span></h2>
+  <h2>③ 鎌倉の残り2試合 ─ 全9パターン <span>「3位以内が数学的に残るか」で判定</span></h2>
   <div class="pfilters">
     <label><input type="checkbox" id="onlyalive" checked> 生存パターンのみ表示</label>
     <span style="color:var(--muted)" id="pstat"></span>
@@ -179,7 +179,8 @@ const DATES={13:"9/13",14:"9/27",15:"10/4",16:"10/11",17:"10/18",18:"10/25"};
 /* 公式結果（fixture index → [home, away]） */
 const SCORES={0:[2,1],1:[0,1],2:[4,0],3:[0,0],4:[0,4],   /* 第13節 */
               5:[2,0],6:[0,2],7:[0,0],8:[3,0],9:[4,1],    /* 第14節 */
-              10:[0,1],11:[2,2],12:[1,1],13:[1,3],14:[3,3]}; /* 第15節 */
+              10:[0,1],11:[2,2],12:[1,1],13:[1,3],14:[3,3],  /* 第15節 */
+              15:[1,3],16:[2,2],17:[0,1],18:[1,1],19:[2,3]}; /* 第16節 */
 
 const PTS=P12.slice(), GFv=GF12.slice(), GAv=GA12.slice(), PL=new Array(10).fill(12);
 const WN=W12.slice(), DR=D12.slice();
